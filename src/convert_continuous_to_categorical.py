@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
 from pandas.api.types import is_numeric_dtype
+from src.logger import setup_logger  # <--- Change: Import the central logger
+
+# <--- Change: Create logger for this file
+logger = setup_logger("Data_Conversion")
 
 def convert_continuous_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -18,6 +22,9 @@ def convert_continuous_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
         assert col in df.columns, f"Missing required column: '{col}' in DataFrame."
 
     try:
+        # <--- Change: Log process start
+        logger.info("Starting conversion of continuous variables to categorical categories...")
+
         # Create a copy to avoid SettingWithCopyWarning
         df_cat = df.copy()
 
@@ -25,6 +32,7 @@ def convert_continuous_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
         # Ensure columns are numeric before applying thresholds
         for col in required_cols:
              if not is_numeric_dtype(df_cat[col]):
+                 # We could add an error log here before raising, but the except block below will catch it regardless
                  raise TypeError(f"Column '{col}' must be numeric type. Please clean data first.")
 
         # --- 3. Logic Implementation ---
@@ -57,13 +65,19 @@ def convert_continuous_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
         # --- 4. Post-validation (Output Check) ---
         # Verify the new column was actually created and is not empty
         assert 'risk_group' in df_cat.columns, "Failed to create 'risk_group' column."
+        
         # Optional: Check for nulls in the new column
         if df_cat['risk_group'].isnull().any():
-             print("Warning: Null values found in 'risk_group' column.")
+             # <--- Change: Use warning instead of print
+             logger.warning("Null values found in 'risk_group' column after conversion.")
+
+        # <--- Change: Log success
+        logger.info("Successfully created 'risk_group' column.")
 
         return df_cat
 
     except Exception as e:
-        # Catch unexpected errors, print a clear message, and re-raise
-        print(f"CRITICAL ERROR in convert_continuous_to_categorical: {str(e)}")
+        # Catch unexpected errors, log as error, and re-raise
+        # <--- Change: Use error instead of print
+        logger.error(f"CRITICAL ERROR in convert_continuous_to_categorical: {str(e)}")
         raise e

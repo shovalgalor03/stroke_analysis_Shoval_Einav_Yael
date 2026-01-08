@@ -1,5 +1,9 @@
 import pandas as pd
 import numpy as np
+from src.logger import setup_logger
+
+# --- Initialize Logger (immediately after imports) ---
+logger = setup_logger("composite_module")
 
 def create_composite_variable(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -11,7 +15,7 @@ def create_composite_variable(df: pd.DataFrame) -> pd.DataFrame:
     # Validate input type
     assert isinstance(df, pd.DataFrame), "Input 'df' must be a pandas DataFrame."
 
-    # Validate that the necessary flags from the previous step exist [cite: 45, 262-263]
+    # [cite_start]Validate that the necessary flags from the previous step exist [cite: 45, 262-263]
     required_flags = ['bmi_high', 'glucose_high']
     for col in required_flags:
         assert col in df.columns, f"Missing required column: '{col}'. Run 'convert_continuous_to_categorical' first."
@@ -28,7 +32,7 @@ def create_composite_variable(df: pd.DataFrame) -> pd.DataFrame:
             assert set(unique_vals).issubset({0, 1}), f"Column '{col}' contains invalid values (must be 0 or 1)."
 
         # --- 3. Logic Implementation ---
-        # Define conditions for the 4 groups [cite: 46, 264-265]
+        # [cite_start]Define conditions for the 4 groups [cite: 46, 264-265]
         # 1. Both High
         cond_both = (df_comp['bmi_high'] == 1) & (df_comp['glucose_high'] == 1)
         # 2. BMI Only (High BMI but Normal Glucose)
@@ -53,12 +57,12 @@ def create_composite_variable(df: pd.DataFrame) -> pd.DataFrame:
         # Verify the new column exists
         assert 'risk_group' in df_comp.columns, "Failed to create 'risk_group' column."
         
-        # [Optional] Log the distribution to ensure groups are balanced/exist [cite: 266]
-        print("Composite Variable Created Successfully. Group Distribution:")
-        print(df_comp['risk_group'].value_counts())
+        # [cite_start][Optional] Log the distribution to ensure groups are balanced/exist [cite: 266]
+        logger.info("Composite Variable Created Successfully. Group Distribution:\n" + str(df_comp['risk_group'].value_counts()))
 
         return df_comp
 
     except Exception as e:
-        print(f"CRITICAL ERROR in create_composite_variable: {str(e)}")
+        # Changed print to logger.error for consistency
+        logger.error(f"CRITICAL ERROR in create_composite_variable: {str(e)}")
         raise e

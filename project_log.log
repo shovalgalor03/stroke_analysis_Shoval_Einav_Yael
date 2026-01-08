@@ -1,0 +1,60 @@
+2026-01-08 19:03:04,170 - INFO - === Starting Stroke Prediction Pipeline ===
+2026-01-08 19:03:04,171 - INFO - Attempting to load dataset from stroke_df\healthcare-dataset-stroke-data.csv
+2026-01-08 19:03:04,186 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-08 19:03:04,186 - INFO - START: processing column 'bmi'.
+2026-01-08 19:03:04,188 - INFO - SUCCESS: Column 'bmi' converted. 0 invalid values were set to NaN.
+2026-01-08 19:03:04,188 - INFO - Starting conversion of continuous variables to categorical categories...
+2026-01-08 19:03:04,252 - INFO - Successfully created 'risk_group' column.
+2026-01-08 19:03:04,259 - INFO - Composite Variable Created Successfully. Group Distribution:
+risk_group
+neither         2797
+bmi_only        1492
+both_high        428
+glucose_only     393
+Name: count, dtype: int64
+2026-01-08 19:03:04,259 - INFO - Pipeline finished successfully.
+2026-01-08 19:19:07,456 - INFO - === Starting Stroke Prediction Pipeline ===
+2026-01-08 19:19:07,457 - INFO - Attempting to load dataset from stroke_df\healthcare-dataset-stroke-data.csv
+2026-01-08 19:19:07,497 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-08 19:19:07,498 - INFO - START: processing column 'bmi'.
+2026-01-08 19:19:07,507 - INFO - SUCCESS: Column 'bmi' converted. 0 invalid values were set to NaN.
+2026-01-08 19:19:07,509 - INFO - Starting conversion of continuous variables to categorical categories...
+2026-01-08 19:19:07,596 - INFO - Successfully created 'risk_group' column.
+2026-01-08 19:19:07,619 - INFO - Composite Variable Created Successfully. Group Distribution:
+risk_group
+neither         2797
+bmi_only        1492
+both_high        428
+glucose_only     393
+Name: count, dtype: int64
+2026-01-08 19:19:07,621 - INFO - Pipeline finished successfully.
+2026-01-08 19:19:12,559 - INFO - === Starting Stroke Prediction Pipeline ===
+2026-01-08 19:19:12,561 - INFO - Attempting to load dataset from stroke_df\healthcare-dataset-stroke-data.csv
+2026-01-08 19:19:12,652 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-08 19:19:12,658 - INFO - START: processing column 'bmi'.
+2026-01-08 19:19:12,668 - INFO - SUCCESS: Column 'bmi' converted. 0 invalid values were set to NaN.
+2026-01-08 19:19:12,687 - INFO - Starting conversion of continuous variables to categorical categories...
+2026-01-08 19:19:12,830 - INFO - Successfully created 'risk_group' column.
+2026-01-08 19:19:12,846 - INFO - Composite Variable Created Successfully. Group Distribution:
+risk_group
+neither         2797
+bmi_only        1492
+both_high        428
+glucose_only     393
+Name: count, dtype: int64
+2026-01-08 19:19:12,847 - INFO - Pipeline finished successfully.
+2026-01-08 19:19:17,530 - INFO - === Starting Stroke Prediction Pipeline ===
+2026-01-08 19:19:17,538 - INFO - Attempting to load dataset from stroke_df\healthcare-dataset-stroke-data.csv
+2026-01-08 19:19:17,591 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-08 19:19:17,594 - INFO - START: processing column 'bmi'.
+2026-01-08 19:19:17,598 - INFO - SUCCESS: Column 'bmi' converted. 0 invalid values were set to NaN.
+2026-01-08 19:19:17,605 - INFO - Starting conversion of continuous variables to categorical categories...
+2026-01-08 19:19:17,723 - INFO - Successfully created 'risk_group' column.
+2026-01-08 19:19:17,738 - INFO - Composite Variable Created Successfully. Group Distribution:
+risk_group
+neither         2797
+bmi_only        1492
+both_high        428
+glucose_only     393
+Name: count, dtype: int64
+2026-01-08 19:19:17,739 - INFO - Pipeline finished successfully.
