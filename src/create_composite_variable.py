@@ -1,5 +1,9 @@
 import pandas as pd
 import numpy as np
+from src.logger import setup_logger
+
+# --- הפעלת הלוגר (מיד אחרי האימפורטים) ---
+logger = setup_logger("composite_module")
 
 def create_composite_variable(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -54,8 +58,7 @@ def create_composite_variable(df: pd.DataFrame) -> pd.DataFrame:
         assert 'risk_group' in df_comp.columns, "Failed to create 'risk_group' column."
         
         # [Optional] Log the distribution to ensure groups are balanced/exist [cite: 266]
-        print("Composite Variable Created Successfully. Group Distribution:")
-        print(df_comp['risk_group'].value_counts())
+        logger.info("Composite Variable Created Successfully. Group Distribution:\n" + str(df_comp['risk_group'].value_counts()))
 
         return df_comp
 
