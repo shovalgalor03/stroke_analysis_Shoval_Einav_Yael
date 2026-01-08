@@ -19,7 +19,7 @@ def load_dataset(file_path):
 
     Returns
     -------
-    pd.DataFrame or None
+    pd.DataFrame or None.
         A DataFrame containing the dataset if loading is successful;
         otherwise, None is returned.
     """
