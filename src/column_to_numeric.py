@@ -1,12 +1,8 @@
 import pandas as pd
-import logging
+from src.logger import setup_logger  # <--- Change: Import the central logger
 
-# Configure logging to save output to a file
-logging.basicConfig(
-    filename='data_processing.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+# <--- Change: Create a unique logger for this file/module
+logger = setup_logger("Data_Processing_Numeric")
 
 def safe_convert_to_numeric(df: pd.DataFrame, col_name: str, safety_threshold: float = 0.5) -> pd.DataFrame:
     """
@@ -26,7 +22,8 @@ def safe_convert_to_numeric(df: pd.DataFrame, col_name: str, safety_threshold: f
         pd.DataFrame: The DataFrame with the specific column converted to numeric.
                       Returns the original DataFrame if an error occurs.
     """
-    logging.info(f"START: processing column '{col_name}'.")
+    # <--- Change: Use logger instead of logging
+    logger.info(f"START: processing column '{col_name}'.")
 
     try:
         # 1. Pre-check: Validate that the column exists
@@ -60,19 +57,21 @@ def safe_convert_to_numeric(df: pd.DataFrame, col_name: str, safety_threshold: f
         assert pd.api.types.is_numeric_dtype(df[col_name]), \
             f"Verification Failed: Column '{col_name}' is still not numeric."
 
-        logging.info(f"SUCCESS: Column '{col_name}' converted. {newly_created_nans} invalid values were set to NaN.")
+        # <--- Change: Log success
+        logger.info(f"SUCCESS: Column '{col_name}' converted. {newly_created_nans} invalid values were set to NaN.")
         return df
 
     # --- Exception Handling ---
 
     except KeyError as e:
-        logging.error(f"Input Error: {e}")
+        logger.error(f"Input Error: {e}")
 
     except AssertionError as e:
-        logging.error(f"Integrity Check Failed: {e}")
+        logger.error(f"Integrity Check Failed: {e}")
 
     except Exception as e:
-        logging.exception(f"Unexpected error while converting '{col_name}': {e}")
+        # <--- Change: Use logger.exception to capture the full traceback
+        logger.exception(f"Unexpected error while converting '{col_name}': {e}")
 
-        #Return original DataFrame in case of failure to maintain continuity
-    return df 
+        # Return original DataFrame in case of failure to maintain continuity
+        return df
