@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from src.logger import setup_logger
 
+logger = setup_logger("composite_module") #Create a unique logger for this file
 # --- Initialize Logger (immediately after imports) ---
 logger = setup_logger("composite_module")
 

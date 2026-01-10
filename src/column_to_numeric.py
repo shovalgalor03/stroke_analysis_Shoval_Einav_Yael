@@ -1,4 +1,7 @@
 import pandas as pd
+from src.logger import setup_logger  # Import the central logger
+
+logger = setup_logger("Data_Processing_Numeric") # Create a unique logger for this file
 from src.logger import setup_logger  # <--- Change: Import the central logger
 
 # <--- Change: Create a unique logger for this file/module
@@ -22,6 +25,7 @@ def safe_convert_to_numeric(df: pd.DataFrame, col_name: str, safety_threshold: f
         pd.DataFrame: The DataFrame with the specific column converted to numeric.
                       Returns the original DataFrame if an error occurs.
     """
+    
     # <--- Change: Use logger instead of logging
     logger.info(f"START: processing column '{col_name}'.")
 
@@ -70,6 +74,7 @@ def safe_convert_to_numeric(df: pd.DataFrame, col_name: str, safety_threshold: f
         logger.error(f"Integrity Check Failed: {e}")
 
     except Exception as e:
+        # exception to capture the full traceback
         # <--- Change: Use logger.exception to capture the full traceback
         logger.exception(f"Unexpected error while converting '{col_name}': {e}")
 
