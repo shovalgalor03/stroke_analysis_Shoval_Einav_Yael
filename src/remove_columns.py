@@ -3,7 +3,7 @@ from src.logger import setup_logger
 
 logger = setup_logger("remove_columns") # Create a unique logger for this file/module
 
-def remove_irrelevant_columns(df: pd.DataFrame, columns_to_remove: list) -> pd.DataFrame:
+def remove_columns(df: pd.DataFrame, columns_to_remove: list) -> pd.DataFrame:
     """
     Removes specified columns from the DataFrame if they exist.
     Useful for cleaning non-predictive features (e.g., IDs) before analysis.

@@ -20,7 +20,7 @@ def fill_missing_with_median(df: pd.DataFrame, col_name: str) -> pd.DataFrame:
     logger.info(f"START: Filling missing values for '{col_name}' using Median.")
 
     try:
-        df_filled = df.copy()
+        df_filled = df.copy()  # Create a copy to avoid SettingWithCopyWarning on original dataframe
         
         # 1. Pre-check: Validate that the column exists
         if col_name not in df_filled.columns:
