@@ -3,6 +3,9 @@ import os
 from src.logger import setup_logger  # Import the central logger
 
 #Create a unique logger for this file
+from src.logger import setup_logger  # <--- Change: Import the central logger
+
+# <--- Change: Create a unique logger for this file
 logger = setup_logger("Data_Loading")
 
 def load_dataset(file_path):

@@ -4,6 +4,10 @@ from pandas.api.types import is_numeric_dtype
 from src.logger import setup_logger  # Import the central logger
 
 logger = setup_logger("Data_Conversion") # Create a unique logger for this file
+from src.logger import setup_logger  # <--- Change: Import the central logger
+
+# <--- Change: Create logger for this file
+logger = setup_logger("Data_Conversion")
 
 def convert_continuous_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
     """
