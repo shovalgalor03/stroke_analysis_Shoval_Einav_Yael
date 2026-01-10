@@ -58,3 +58,104 @@ both_high        428
 glucose_only     393
 Name: count, dtype: int64
 2026-01-08 19:19:17,739 - INFO - Pipeline finished successfully.
+2026-01-10 15:13:47,452 - INFO - ==========================================
+2026-01-10 15:13:47,454 - INFO -    STARTING STROKE ANALYSIS PIPELINE      
+2026-01-10 15:13:47,454 - INFO - ==========================================
+2026-01-10 15:13:47,454 - INFO - Step 1: Loading dataset from stroke_df/healthcare-dataset-stroke-data.csv...
+2026-01-10 15:13:47,455 - INFO - Attempting to load dataset from stroke_df/healthcare-dataset-stroke-data.csv
+2026-01-10 15:13:47,502 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-10 15:13:47,502 - INFO - Step 2: Cleaning and Preprocessing Data...
+2026-01-10 15:13:47,502 - ERROR - Error in convert_to_numeric: safe_convert_to_numeric() missing 1 required positional argument: 'col_name'
+2026-01-10 15:13:47,503 - ERROR - Error in fill_missing_values: fill_missing_with_median() missing 1 required positional argument: 'col_name'
+2026-01-10 15:13:47,504 - ERROR - Error in create_risk_groups: Missing required column: 'bmi_high'. Run 'convert_continuous_to_categorical' first.
+2026-01-10 15:13:47,505 - INFO - Step 3: Running Statistical Analysis...
+2026-01-10 15:13:47,505 - INFO - --> Running Chi-Square Test (General Association)...
+2026-01-10 15:13:47,505 - INFO - Starting Chi-Square test between 'risk_group' and 'stroke'.
+2026-01-10 15:13:47,506 - ERROR - Column selection error: "Columns 'risk_group' or 'stroke' not found in DataFrame."
+2026-01-10 15:13:47,507 - INFO - --> Running Relative Risk Analysis (Specific Group Comparisons)...
+2026-01-10 15:13:47,507 - INFO - Running full analysis pipeline...
+2026-01-10 15:13:47,507 - ERROR - Error in Relative Risk Analysis: 'risk_group'
+2026-01-10 15:13:47,508 - INFO - ==========================================
+2026-01-10 15:13:47,508 - INFO -    ANALYSIS COMPLETE. CHECK LOGS.         
+2026-01-10 15:13:47,508 - INFO - ==========================================
+2026-01-10 15:15:33,628 - INFO - ==========================================
+2026-01-10 15:15:33,630 - INFO -    STARTING STROKE ANALYSIS PIPELINE      
+2026-01-10 15:15:33,630 - INFO - ==========================================
+2026-01-10 15:15:33,631 - INFO - Step 1: Loading dataset from stroke_df/healthcare-dataset-stroke-data.csv...
+2026-01-10 15:15:33,631 - INFO - Attempting to load dataset from stroke_df/healthcare-dataset-stroke-data.csv
+2026-01-10 15:15:33,669 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-10 15:15:33,670 - INFO - Step 2: Cleaning and Preprocessing Data...
+2026-01-10 15:15:33,670 - ERROR - Error in convert_to_numeric: safe_convert_to_numeric() missing 1 required positional argument: 'col_name'
+2026-01-10 15:15:33,671 - ERROR - Error in fill_missing_values: fill_missing_with_median() missing 1 required positional argument: 'col_name'
+2026-01-10 15:15:33,671 - ERROR - Error in create_risk_groups: Missing required column: 'bmi_high'. Run 'convert_continuous_to_categorical' first.
+2026-01-10 15:15:33,672 - INFO - Step 3: Running Statistical Analysis...
+2026-01-10 15:15:33,673 - INFO - --> Running Chi-Square Test (General Association)...
+2026-01-10 15:15:33,674 - INFO - Starting Chi-Square test between 'risk_group' and 'stroke'.
+2026-01-10 15:15:33,675 - ERROR - Column selection error: "Columns 'risk_group' or 'stroke' not found in DataFrame."
+2026-01-10 15:15:33,675 - INFO - --> Running Relative Risk Analysis (Specific Group Comparisons)...
+2026-01-10 15:15:33,676 - INFO - Running full analysis pipeline...
+2026-01-10 15:15:33,678 - ERROR - Error in Relative Risk Analysis: 'risk_group'
+2026-01-10 15:15:33,679 - INFO - ==========================================
+2026-01-10 15:15:33,680 - INFO -    ANALYSIS COMPLETE. CHECK LOGS.         
+2026-01-10 15:15:33,680 - INFO - ==========================================
+2026-01-10 15:16:43,958 - INFO - ==========================================
+2026-01-10 15:16:43,960 - INFO -    STARTING STROKE ANALYSIS PIPELINE      
+2026-01-10 15:16:43,960 - INFO - ==========================================
+2026-01-10 15:16:43,961 - INFO - Step 1: Loading dataset from stroke_df/healthcare-dataset-stroke-data.csv...
+2026-01-10 15:16:43,962 - INFO - Attempting to load dataset from stroke_df/healthcare-dataset-stroke-data.csv
+2026-01-10 15:16:43,976 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-10 15:16:43,977 - INFO - Step 2: Cleaning and Preprocessing Data...
+2026-01-10 15:16:43,977 - ERROR - Error in convert_to_numeric: safe_convert_to_numeric() missing 1 required positional argument: 'col_name'
+2026-01-10 15:16:43,978 - ERROR - Error in fill_missing_values: fill_missing_with_median() missing 1 required positional argument: 'col_name'
+2026-01-10 15:16:43,980 - ERROR - Error in create_risk_groups: Missing required column: 'bmi_high'. Run 'convert_continuous_to_categorical' first.
+2026-01-10 15:16:43,981 - INFO - Step 3: Running Statistical Analysis...
+2026-01-10 15:16:43,981 - INFO - --> Running Chi-Square Test (General Association)...
+2026-01-10 15:16:43,982 - INFO - Starting Chi-Square test between 'risk_group' and 'stroke'.
+2026-01-10 15:16:43,982 - ERROR - Column selection error: "Columns 'risk_group' or 'stroke' not found in DataFrame."
+2026-01-10 15:16:43,983 - INFO - --> Running Relative Risk Analysis (Specific Group Comparisons)...
+2026-01-10 15:16:43,983 - INFO - Running full analysis pipeline...
+2026-01-10 15:16:43,985 - ERROR - Error in Relative Risk Analysis: 'risk_group'
+2026-01-10 15:16:43,985 - INFO - ==========================================
+2026-01-10 15:16:43,986 - INFO -    ANALYSIS COMPLETE. CHECK LOGS.         
+2026-01-10 15:16:43,986 - INFO - ==========================================
+2026-01-10 15:27:03,093 - INFO - Attempting to load dataset from stroke_df/healthcare-dataset-stroke-data.csv
+2026-01-10 15:27:03,102 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-10 15:27:03,104 - INFO - --- Cleaning Data ---
+2026-01-10 15:27:03,105 - INFO - START: processing column 'bmi'.
+2026-01-10 15:27:03,107 - INFO - SUCCESS: Column 'bmi' converted. 0 invalid values were set to NaN.
+2026-01-10 15:27:03,109 - INFO - START: processing column 'avg_glucose_level'.
+2026-01-10 15:27:03,110 - INFO - SUCCESS: Column 'avg_glucose_level' converted. 0 invalid values were set to NaN.
+2026-01-10 15:27:03,110 - INFO -  - Converted columns to numeric.
+2026-01-10 15:27:03,111 - INFO - START: Filling missing values for 'bmi' using Median.
+2026-01-10 15:27:03,115 - INFO - Action: Filled 201 missing values with median (28.10).
+2026-01-10 15:27:03,116 - INFO - SUCCESS: Column 'bmi' processing complete.
+2026-01-10 15:27:03,117 - INFO -  - Filled missing values in 'bmi'.
+2026-01-10 15:27:03,118 - INFO - Starting conversion of continuous variables to categorical categories...
+2026-01-10 15:27:03,141 - INFO - Successfully created 'risk_group' column.
+2026-01-10 15:27:03,142 - INFO -  - Created categorical columns (bmi_high, glucose_high).
+2026-01-10 15:27:03,150 - INFO - Composite Variable Created Successfully. Group Distribution:
+risk_group
+neither         2797
+bmi_only        1492
+both_high        428
+glucose_only     393
+Name: count, dtype: int64
+2026-01-10 15:27:03,151 - INFO -  - Created 'risk_group' variable.
+2026-01-10 15:27:03,151 - INFO - --- Running Analysis ---
+2026-01-10 15:27:03,152 - INFO - Running Chi-Square...
+2026-01-10 15:27:03,158 - INFO - Starting Chi-Square test between 'risk_group' and 'stroke'.
+2026-01-10 15:27:03,252 - INFO - Contingency table created. Shape: (4, 2)
+2026-01-10 15:27:03,254 - INFO - Test Complete. P-value: 0.00000 -> Result: Significant (Reject H0)
+2026-01-10 15:27:03,255 - INFO - Running Relative Risk...
+2026-01-10 15:27:03,256 - INFO - Running full analysis pipeline...
+2026-01-10 15:27:03,256 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-10 15:27:03,263 - INFO - Analysis Done. RR=3.0255, p=0.0000
+2026-01-10 15:27:03,266 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-10 15:27:03,269 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-10 15:27:03,270 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-10 15:27:03,275 - INFO - Analysis Done. RR=2.8336, p=0.0000
+2026-01-10 15:27:03,278 - INFO - ==================================================
+2026-01-10 15:27:03,278 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-10 15:27:03,279 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-10 15:27:03,280 - INFO - Risk Factor (RR): 3.0255 (CI: 2.1981-4.1642)
+2026-01-10 15:27:03,283 - INFO - ==================================================

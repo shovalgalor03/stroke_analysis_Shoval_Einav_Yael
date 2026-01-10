@@ -1,110 +1,93 @@
 import pandas as pd
-import sys
-import os
-
-# --- Imports from your src folder ---
 from src.logger import setup_logger
 
-# 1. Data Loading
-from src.load_csv import load_dataset
+# --- Imports (Matched exactly to your file names) ---
+from src.load_csv import load_dataset 
 
-# 2. Data Cleaning & Preparation (Yael's part)
-# (Make sure function names match exactly what is written in the files)
-from src.column_to_numeric import safe_convert_to_numeric
-from src.fill_missing import fill_missing_values 
-# from src.convert_continuous_to_categorical import convert_continuous_to_categorical # Optional if needed separately
-from src.create_composite_variable import create_risk_groups
+# 1. Convert to Numeric
+from src.column_to_numeric import safe_convert_to_numeric 
 
-# 3. Statistical Analysis (Einav & Shoval's part)
+# 2. Fill Missing Values
+from src.fill_missing import fill_missing_with_median 
+
+# 3. Create Categorical Columns (Critical! The next function depends on this)
+from src.convert_continuous_to_categorical import convert_continuous_to_categorical
+
+# 4. Create Composite Variable (Note the exact function name)
+from src.create_composite_variable import create_composite_variable 
+
+# 5. Statistical Analysis
 from src.chi_square_analysis import run_chi_square_test
 from src.relative_risk_analysis import run_full_analysis_pipeline
 
-# Initialize the main logger
-logger = setup_logger("Main_Pipeline")
+logger = setup_logger("Main_Runner")
 
 def main():
-    """
-    Main execution function.
-    Runs the full data analysis pipeline: Load -> Clean -> Enrich -> Analyze.
-    """
-    logger.info("==========================================")
-    logger.info("   STARTING STROKE ANALYSIS PIPELINE      ")
-    logger.info("==========================================")
+    logger.info("🚀 Starting the Stroke Analysis Pipeline...")
 
-    # ---------------------------------------------------------
-    # STEP 1: Load Data
-    # ---------------------------------------------------------
-    file_path = "stroke_df/healthcare-dataset-stroke-data.csv"
-    logger.info(f"Step 1: Loading dataset from {file_path}...")
-    
+    # --- Step 1: Load Data ---
+    file_path = "stroke_df/healthcare-dataset-stroke-data.csv" 
     df = load_dataset(file_path)
-
-    # Safety check: If data didn't load, stop everything.
-    if df is None or df.empty:
-        logger.critical("Data loading failed or dataframe is empty. Exiting.")
+    
+    if df is None:
+        logger.error("Exiting due to data loading failure.")
         return
 
-    # ---------------------------------------------------------
-    # STEP 2: Data Cleaning & Preprocessing
-    # ---------------------------------------------------------
-    logger.info("Step 2: Cleaning and Preprocessing Data...")
-
-    # A. Convert columns to numeric (handling errors/strings)
+    # --- Step 2: Cleaning and Preparation ---
+    logger.info("--- Cleaning Data ---")
+    
+    # Converting columns to numeric (sending 'col_name' as required)
     try:
-        df = safe_convert_to_numeric(df)
-        logger.info(" - Converted relevant columns to numeric.")
+        # We call the function twice, once for each relevant column
+        df = safe_convert_to_numeric(df, 'bmi')
+        df = safe_convert_to_numeric(df, 'avg_glucose_level')
+        logger.info(" - Converted columns to numeric.")
     except Exception as e:
-        logger.error(f"Error in convert_to_numeric: {e}")
+        logger.error(f"Error in safe_convert_to_numeric: {e}")
 
-    # B. Fill missing values (NaN -> Mean/Mode)
+    # Filling missing values (sending column name)
     try:
-        df = fill_missing_values(df)
-        logger.info(" - Filled missing values.")
+        df = fill_missing_with_median(df, 'bmi') 
+        logger.info(" - Filled missing values in 'bmi'.")
     except Exception as e:
-        logger.error(f"Error in fill_missing_values: {e}")
+        logger.error(f"Error in fill_missing_with_median: {e}")
 
-    # C. Create new variables (Risk Groups)
-    # This is critical for the Relative Risk analysis later
+    # Critical Step: Create categorical columns (bmi_high, etc.)
+    # The next function (composite) requires these columns to exist
     try:
-        df = create_risk_groups(df)
-        logger.info(" - Created 'risk_group' composite variable.")
+        df = convert_continuous_to_categorical(df)
+        logger.info(" - Created categorical columns (bmi_high, glucose_high).")
     except Exception as e:
-        logger.error(f"Error in create_risk_groups: {e}")
+        logger.error(f"Error in convert_continuous_to_categorical: {e}")
 
-    # ---------------------------------------------------------
-    # STEP 3: Statistical Analysis
-    # ---------------------------------------------------------
-    logger.info("Step 3: Running Statistical Analysis...")
-
-    # Analysis A: Chi-Square Test (Einav's Module)
-    # Checks for general association between risk groups and stroke
-    logger.info("--> Running Chi-Square Test (General Association)...")
+    # Create Composite Variable (using the correct function name)
     try:
-        run_chi_square_test(df, independent_var='risk_group', dependent_var='stroke')
+        df = create_composite_variable(df)
+        logger.info(" - Created 'risk_group' variable.")
     except Exception as e:
-        logger.error(f"Error in Chi-Square Test: {e}")
+        logger.error(f"Error in create_composite_variable: {e}")
 
-    # Analysis B: Relative Risk Analysis (Shoval's Module)
-    # Checks specific risk for each group compared to 'neither'
-    logger.info("--> Running Relative Risk Analysis (Specific Group Comparisons)...")
-    try:
-        results_df = run_full_analysis_pipeline(df)
+    # --- Step 3: Statistical Analysis ---
+    logger.info("--- Running Analysis ---")
+    
+    if 'risk_group' in df.columns:
+        # 1. Chi-Square Test
+        logger.info("Running Chi-Square...")
+        run_chi_square_test(df, 'risk_group', 'stroke')
+
+        # 2. Relative Risk Analysis
+        logger.info("Running Relative Risk...")
+        results = run_full_analysis_pipeline(df)
         
-        # Optional: Print a sneak peek of the results to the terminal
-        if results_df is not None and not results_df.empty:
-            print("\n--- Final Results Preview ---")
-            print(results_df[['comparison', 'RR', 'P_Value', 'Significant_0.05']])
-            print("-----------------------------\n")
-            
-    except Exception as e:
-        logger.error(f"Error in Relative Risk Analysis: {e}")
-
-    # ---------------------------------------------------------
-    # Completion
-    # ---------------------------------------------------------
-    logger.info("==========================================")
-    logger.info("   ANALYSIS COMPLETE. CHECK LOGS.         ")
-    logger.info("==========================================")
+        # Print summary to terminal
+        if results is not None:
+            print("\n" + "="*40)
+            print(" FINAL RESULTS PREVIEW ")
+            print("="*40)
+            print(results[['comparison', 'RR', 'P_Value', 'Significant_0.05']])
+            print("\n")
+    else:
+        logger.error("CRITICAL: 'risk_group' column missing. Cannot run analysis.")
 
 if __name__ == "__main__":
     main()
