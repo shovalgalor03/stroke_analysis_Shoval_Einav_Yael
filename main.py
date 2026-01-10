@@ -10,7 +10,7 @@ from src.load_csv import load_dataset
 
 # 2. Data Cleaning & Preparation (Yael's part)
 # (Make sure function names match exactly what is written in the files)
-from src.column_to_numeric import convert_to_numeric
+from src.column_to_numeric import safe_convert_to_numeric
 from src.fill_missing import fill_missing_values 
 # from src.convert_continuous_to_categorical import convert_continuous_to_categorical # Optional if needed separately
 from src.create_composite_variable import create_risk_groups
@@ -51,7 +51,7 @@ def main():
 
     # A. Convert columns to numeric (handling errors/strings)
     try:
-        df = convert_to_numeric(df)
+        df = safe_convert_to_numeric(df)
         logger.info(" - Converted relevant columns to numeric.")
     except Exception as e:
         logger.error(f"Error in convert_to_numeric: {e}")
