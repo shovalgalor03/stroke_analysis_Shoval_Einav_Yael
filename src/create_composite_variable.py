@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 from src.logger import setup_logger
 
-# --- Initialize Logger (immediately after imports) ---
-logger = setup_logger("composite_module")
+logger = setup_logger("composite_module") #Create a unique logger for this file
 
 def create_composite_variable(df: pd.DataFrame) -> pd.DataFrame:
     """
