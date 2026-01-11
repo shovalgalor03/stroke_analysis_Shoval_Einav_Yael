@@ -30,6 +30,7 @@ def safe_convert_to_numeric(df: pd.DataFrame, col_name: str, safety_threshold: f
     logger.info(f"START: processing column '{col_name}'.")
 
     try:
+        df_num = df.copy()  # Work on a copy
         # 1. Pre-check: Validate that the column exists
         if col_name not in df.columns:
             raise KeyError(f"Column '{col_name}' does not exist in the DataFrame.")
