@@ -4,26 +4,20 @@ from src.logger import setup_logger
 # --- Imports (Matched exactly to your file names) ---
 from src.load_csv import load_dataset 
 
-# 1. Convert to Numeric
-from src.column_to_numeric import safe_convert_to_numeric 
+# 1. Convert to Numeric + fill missing
+from src.data_cleaning import convert_to_numeric, fill_missing_with_median 
 
-# 2. Fill Missing Values
-from src.fill_missing import fill_missing_with_median 
+# 2. Create Categorical Columns + Create Composite Variable
+from src.transformers import convert_continuous_to_categorical, create_composite_variable  
 
-# 3. Create Categorical Columns (Critical! The next function depends on this)
-from src.convert_continuous_to_categorical import convert_continuous_to_categorical
-
-# 4. Create Composite Variable (Note the exact function name)
-from src.create_composite_variable import create_composite_variable 
-
-# 5. Statistical Analysis
+# 3. Statistical Analysis
 from src.chi_square_analysis import run_chi_square_test
 from src.relative_risk_analysis import run_full_analysis_pipeline
 
 logger = setup_logger("Main_Runner")
 
 def main():
-    logger.info("🚀 Starting the Stroke Analysis Pipeline...")
+    logger.info("Starting the Stroke Analysis Pipeline...")
 
     # --- Step 1: Load Data ---
     file_path = "stroke_df/healthcare-dataset-stroke-data.csv" 
