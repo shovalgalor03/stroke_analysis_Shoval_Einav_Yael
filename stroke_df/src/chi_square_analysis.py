@@ -129,7 +129,7 @@ def run_chi_square_test(df: pd.DataFrame, independent_var: str, dependent_var: s
     except ValueError as e:
         # Catches mathematical errors from scipy (e.g., if table contains invalid values)
         logger.error(f"Execution Error - Value Error: {e}")
-        return None
+        return None 
 
     except Exception as e:
         # Catches any other unexpected errors
