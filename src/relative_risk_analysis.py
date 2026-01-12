@@ -5,7 +5,7 @@ from src.logger import setup_logger
 
 logger = setup_logger("rr_analysis")
 
-def _calculate_statistics(exposed_sick, exposed_healthy, control_sick, control_healthy):
+def calculate_statistics(exposed_sick, exposed_healthy, control_sick, control_healthy):
     """
     Internal helper function: Performs only the mathematical calculations.
     Accepts counts of sick/healthy patients and returns: RR, CI, and P-Value.
@@ -58,7 +58,8 @@ def calculate_relative_risk(df, exposed_group, control_group, outcome_col='strok
         # Check that groups exist in the data
         existing_groups = df[group_col].unique()
         if exposed_group not in existing_groups or control_group not in existing_groups:
-            logger.warning(f"Groups not found. Available: {existing_groups}")
+            
+            logger.info(f"Groups not found. Available: {existing_groups}")
             return None
 
         # --- 2. Filter Data ---
@@ -80,7 +81,7 @@ def calculate_relative_risk(df, exposed_group, control_group, outcome_col='strok
             return None
 
         # --- 3. Send to calculation (Helper function) ---
-        rr, ci_lower, ci_upper, p_val = _calculate_statistics(
+        rr, ci_lower, ci_upper, p_val = calculate_statistics(
             exposed_sick, exposed_healthy, control_sick, control_healthy
         )
 
@@ -121,7 +122,8 @@ def run_full_analysis_pipeline(df):
             if res:
                 all_results.append(res)
         else:
-            logger.warning(f"Group '{group}' not found. Skipping.")
+            
+            logger.info(f"Group '{group}' not found. Skipping.")
             
     results_df = pd.DataFrame(all_results)
 
@@ -134,6 +136,7 @@ def run_full_analysis_pipeline(df):
         logger.info(f"Risk Factor (RR): {highest_risk['RR']} (CI: {highest_risk['CI_Lower']}-{highest_risk['CI_Upper']})")
         logger.info("="*50)
     else:
-        logger.warning("No results to analyze.")
+       
+        logger.info("No results to analyze.")
 
     return results_df
