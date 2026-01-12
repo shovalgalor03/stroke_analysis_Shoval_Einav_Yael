@@ -5,14 +5,24 @@ from src.logger import setup_logger
 
 logger = setup_logger("rr_analysis")
 
-def _calculate_statistics(exposed_sick, exposed_healthy, control_sick, control_healthy):
+def calculate_statistics(exposed_sick, exposed_healthy, control_sick, control_healthy):
     """
     Internal helper function: Performs only the mathematical calculations.
     Accepts counts of sick/healthy patients and returns: RR, CI, and P-Value.
     """
+    # --- SAFETY CHECK 1: Sanity Assertions ---
+    # Ensure counts are non-negative (medically impossible).
+    assert exposed_sick >= 0 and exposed_healthy >= 0, "Exposed counts cannot be negative"
+    assert control_sick >= 0 and control_healthy >= 0, "Control counts cannot be negative"
+
     # Total people in each group
     total_exposed = exposed_sick + exposed_healthy
     total_control = control_sick + control_healthy
+
+    # --- SAFETY CHECK 2: Empty Groups ---
+    # Although checked externally, this internal check prevents mathematical crashes.
+    if total_exposed == 0 or total_control == 0:
+        return np.nan, np.nan, np.nan, np.nan
 
     # 1. Calculate Relative Risk (RR)
     risk_exposed = exposed_sick / total_exposed
@@ -25,20 +35,28 @@ def _calculate_statistics(exposed_sick, exposed_healthy, control_sick, control_h
 
     # 2. Calculate Confidence Interval (CI)
     try:
-        # Standard Error (SE) formula
-        se_term_exposed = (1/(exposed_sick + 1e-9)) - (1/(total_exposed + 1e-9))
-        se_term_control = (1/(control_sick + 1e-9)) - (1/(total_control + 1e-9))
-        se = np.sqrt(se_term_exposed + se_term_control)
+        # Add epsilon to prevent division by zero in log calculation
+        epsilon = 1e-9
+        se_term_exposed = (1 / (exposed_sick + epsilon)) - (1 / (total_exposed + epsilon))
+        se_term_control = (1 / (control_sick + epsilon)) - (1 / (total_control + epsilon))
         
-        # Interval bounds
-        ci_lower = np.exp(np.log(rr + 1e-9) - 1.96 * se)
-        ci_upper = np.exp(np.log(rr + 1e-9) + 1.96 * se)
+        # Take absolute value before sqrt to prevent NaN in edge cases
+        se = np.sqrt(abs(se_term_exposed + se_term_control))
+        
+        # Calculate interval bounds
+        ci_lower = np.exp(np.log(rr + epsilon) - 1.96 * se)
+        ci_upper = np.exp(np.log(rr + epsilon) + 1.96 * se)
     except Exception:
         ci_lower, ci_upper = np.nan, np.nan
 
     # 3. Calculate P-value (Chi-Square Test)
     obs = np.array([[exposed_sick, exposed_healthy], [control_sick, control_healthy]])
-    chi2, p_val, dof, expected = chi2_contingency(obs, correction=False)
+    
+    # Check if table is valid for Chi-Square (sum is not zero)
+    if np.sum(obs) == 0:
+        p_val = 1.0
+    else:
+        chi2, p_val, dof, expected = chi2_contingency(obs, correction=False)
 
     return rr, ci_lower, ci_upper, p_val
 
@@ -51,38 +69,52 @@ def calculate_relative_risk(df, exposed_group, control_group, outcome_col='strok
     logger.info(f"Starting analysis: Comparing '{exposed_group}' vs '{control_group}'")
 
     try:
+        # --- SAFETY CHECK 3: Type Checking ---
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError(f"Input 'df' must be a pandas DataFrame, got {type(df)}")
+
         # --- 1. Input Validation ---
         if group_col not in df.columns:
-            raise ValueError(f"Column '{group_col}' not found.")
+            raise ValueError(f"Column '{group_col}' not found in DataFrame.")
+        if outcome_col not in df.columns:
+            raise ValueError(f"Outcome column '{outcome_col}' not found.")
         
         # Check that groups exist in the data
         existing_groups = df[group_col].unique()
-        if exposed_group not in existing_groups or control_group not in existing_groups:
-            logger.warning(f"Groups not found. Available: {existing_groups}")
+        if exposed_group not in existing_groups:
+            logger.warning(f"Exposed group '{exposed_group}' not found. Skipping.")
+            return None
+        if control_group not in existing_groups:
+            logger.warning(f"Control group '{control_group}' not found. Skipping.")
             return None
 
         # --- 2. Filter Data ---
-        subset = df[df[group_col].isin([exposed_group, control_group])]
+        # Use .copy() to avoid SettingWithCopyWarning
+        subset = df[df[group_col].isin([exposed_group, control_group])].copy()
         
+        # Ensure outcome column is numeric (0/1) to prevent summation errors
+        if not pd.api.types.is_numeric_dtype(subset[outcome_col]):
+             raise TypeError(f"Outcome column '{outcome_col}' must be numeric (0/1).")
+
         # Count cases in Exposed Group
         exp_df = subset[subset[group_col] == exposed_group]
-        exposed_sick = exp_df[outcome_col].sum()              # Sick (1)
-        exposed_healthy = len(exp_df) - exposed_sick          # Healthy (0)
+        exposed_sick = int(exp_df[outcome_col].sum())       # Cast to int for safety
+        exposed_healthy = len(exp_df) - exposed_sick
 
         # Count cases in Control Group
         ctrl_df = subset[subset[group_col] == control_group]
-        control_sick = ctrl_df[outcome_col].sum()             # Sick (1)
-        control_healthy = len(ctrl_df) - control_sick         # Healthy (0)
-
-        # Check for empty groups
-        if (exposed_sick + exposed_healthy) == 0 or (control_sick + control_healthy) == 0:
-            logger.error("Cannot calculate RR: One group is empty.")
-            return None
+        control_sick = int(ctrl_df[outcome_col].sum())      # Cast to int for safety
+        control_healthy = len(ctrl_df) - control_sick
 
         # --- 3. Send to calculation (Helper function) ---
-        rr, ci_lower, ci_upper, p_val = _calculate_statistics(
+        rr, ci_lower, ci_upper, p_val = calculate_statistics(
             exposed_sick, exposed_healthy, control_sick, control_healthy
         )
+
+        # If NaN returned (e.g., due to empty groups), stop here
+        if np.isnan(rr):
+            logger.warning(f"Skipping {exposed_group}: Not enough data for calculation.")
+            return None
 
         # --- 4. Package Results ---
         results = {
@@ -100,8 +132,9 @@ def calculate_relative_risk(df, exposed_group, control_group, outcome_col='strok
         return results
 
     except Exception as e:
-        logger.error(f"Error in analysis: {e}")
-        raise e
+        logger.error(f"CRITICAL ERROR in analysis for {exposed_group}: {str(e)}")
+        # Return None instead of crashing, allowing the pipeline to continue
+        return None
 
 
 def run_full_analysis_pipeline(df):
@@ -114,14 +147,16 @@ def run_full_analysis_pipeline(df):
     control = 'neither'
     all_results = []
     
+    # Preliminary check that DataFrame is not empty
+    if df is None or df.empty:
+        logger.error("Dataframe is empty or None. Cannot run pipeline.")
+        return pd.DataFrame()
+
     for group in comparisons:
-        # Check if the group exists in the table before sending
-        if group in df['risk_group'].values:
-            res = calculate_relative_risk(df, group, control)
-            if res:
-                all_results.append(res)
-        else:
-            logger.warning(f"Group '{group}' not found. Skipping.")
+        # Logic to check if group exists is handled inside calculate_relative_risk
+        res = calculate_relative_risk(df, group, control)
+        if res:
+            all_results.append(res)
             
     results_df = pd.DataFrame(all_results)
 
@@ -134,6 +169,6 @@ def run_full_analysis_pipeline(df):
         logger.info(f"Risk Factor (RR): {highest_risk['RR']} (CI: {highest_risk['CI_Lower']}-{highest_risk['CI_Upper']})")
         logger.info("="*50)
     else:
-        logger.warning("No results to analyze.")
+        logger.warning("No valid results were generated.")
 
     return results_df
