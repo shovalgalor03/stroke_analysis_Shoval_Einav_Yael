@@ -1,58 +1,122 @@
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.decomposition import PCA
 from src.logger import setup_logger
 
 logger = setup_logger("Cluster_Analysis")
 
-def prepare_data_for_clustering(df: pd.DataFrame) -> pd.DataFrame:
-    """Step 1: Encode categorical data and scale features."""
+def perform_clustering(df: pd.DataFrame, n_clusters: int = 3) -> pd.DataFrame:
+    """
+    Executes the full K-Means pipeline:
+    1. Prepares data (Encoding + Scaling).
+    2. Runs K-Means algorithm.
+    3. Returns original DataFrame with a new 'cluster' column.
+    
+    Assumption: Input 'df' contains only relevant features (ID/Target removed in main with 'remove_columns' function).
+    """
     try:
-        # Drop target and ID columns
-        cols_drop = [c for c in ['stroke', 'id'] if c in df.columns]
-        X = df.drop(columns=cols_drop)
+        logger.info(f"Starting K-Means pipeline with {n_clusters} clusters...")
+
+        #1A. Encoding - Convert text columns to numbers (Gender -> Gender_Male)
+        X_encoded = pd.get_dummies(df, drop_first=True)     # drop_first=True prevents multicollinearity
         
-        # Convert text to numbers (Encoding)
-        X_encoded = pd.get_dummies(X, drop_first=True)
-        
-        # Scale data (Critical for K-Means!)
+        #1B. Scaling - Normalize features 
         scaler = StandardScaler()
         X_scaled = pd.DataFrame(scaler.fit_transform(X_encoded), columns=X_encoded.columns)
         
-        return X_scaled
-    except Exception as e:
-        logger.error(f"Error in data preparation: {e}")
-        raise e
-
-def run_kmeans(df_original: pd.DataFrame, X_scaled: pd.DataFrame, n_clusters: int = 3) -> pd.DataFrame:
-    """Step 2: Run K-Means and assign clusters to original data."""
-    try:
-        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        #2. K-Means 
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)         # n_init=10: Runs algorithm 10 times to find best centroids
         clusters = kmeans.fit_predict(X_scaled)
         
-        df_clustered = df_original.copy()
+        #3. Combine Results 
+        df_clustered = df.copy()
         df_clustered['cluster'] = clusters
         
-        logger.info(f"Successfully divided data into {n_clusters} clusters.")
+        logger.info("Clustering pipeline complete.")
         return df_clustered
+
     except Exception as e:
-        logger.error(f"Error in K-Means execution: {e}")
+        logger.error(f"Clustering pipeline failed: {e}")
         raise e
 
-def analyze_risk_factors(df_clustered: pd.DataFrame) -> pd.DataFrame:
-    """Step 3: Analyze stroke risk per cluster (The 'Punch')."""
+def plot_clusters_pca(df_clustered: pd.DataFrame):
+    """
+    Visualizes the clusters using PCA (2D projection).
+    """
     try:
-        # Group by cluster and calculate stats
-        summary = df_clustered.groupby('cluster').agg({
-            'stroke': lambda x: x.mean() * 100,  # Risk %
-            'age': 'mean',
-            'bmi': 'mean',
-            'avg_glucose_level': 'mean'
-        }).reset_index()
+        if 'cluster' not in df_clustered.columns:
+            raise KeyError("Missing 'cluster' column. Run K-Means first.")
+
+        logger.info("Generating PCA plot...")
+
+        # 1. Prepare data for PCA (Compact version)
+        # We need numerical data, so we re-encode and scale strictly for plotting
+        X = df_clustered.drop(columns=['cluster'])
+        X_encoded = pd.get_dummies(X, drop_first=True)
+        X_scaled = StandardScaler().fit_transform(X_encoded) # Chained for brevity
+
+        # 2. Run PCA to get 2D coordinates
+        pca_coords = PCA(n_components=2, random_state=42).fit_transform(X_scaled)
+
+        # 3. Plotting
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(
+            x=pca_coords[:, 0], 
+            y=pca_coords[:, 1],
+            hue=df_clustered['cluster'].astype(str), # Convert to string for discrete colors
+            palette='viridis', 
+            s=80, alpha=0.7
+        )
         
-        summary = summary.rename(columns={'stroke': 'risk_percent'})
-        return summary.sort_values('risk_percent', ascending=False)
+        plt.title('Cluster Visualization (PCA Projection)')
+        plt.xlabel('PC1'); plt.ylabel('PC2') # Semicolon allows two commands in one line
+        plt.grid(True, alpha=0.3)
+        plt.legend(title='Cluster')
+        plt.show()
+
     except Exception as e:
-        logger.error(f"Error in analysis: {e}")
-        raise e
+        logger.error(f"Visualization failed: {e}")
+
+def plot_risk_analysis(summary_table: pd.DataFrame):
+    """
+    Visualizes stroke risk per cluster using a Bar Chart.
+    """
+    try:
+        logger.info("Generating Risk Bar Chart...")
+        
+        plt.figure(figsize=(8, 6))
+        
+        # 1. Create Bar Plot
+        # We capture the axes object ('ax') to add labels later
+        ax = sns.barplot(
+            data=summary_table, 
+            x='cluster', 
+            y='stroke_risk_%', 
+            palette='Reds'
+        )
+        
+        # 2. Add Labels on top of bars
+        # Uses the modern matplotlib API to auto-label bars
+        ax.bar_label(ax.containers[0], fmt='%.1f%%', padding=3, fontweight='bold')
+
+        # 3. Styling
+        plt.title('Stroke Risk by Cluster', fontsize=14, fontweight='bold')
+        plt.ylabel('Risk (%)')
+        plt.xlabel('Cluster Group')
+        
+        # Add some breathing room at the top for the labels
+        plt.ylim(0, summary_table['stroke_risk_%'].max() * 1.2) 
+        
+        plt.show()
+
+    except Exception as e:
+        logger.error(f"Risk Chart failed: {e}")
+
+
+
+
+
+
