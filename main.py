@@ -33,8 +33,8 @@ def main():
     # Converting columns to numeric (sending 'col_name' as required)
     try:
         # We call the function twice, once for each relevant column
-        df = safe_convert_to_numeric(df, 'bmi')
-        df = safe_convert_to_numeric(df, 'avg_glucose_level')
+        df = convert_to_numeric(df, 'bmi')
+        df = convert_to_numeric(df, 'avg_glucose_level')
         logger.info(" - Converted columns to numeric.")
     except Exception as e:
         logger.error(f"Error in safe_convert_to_numeric: {e}")
