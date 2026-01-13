@@ -81,3 +81,4 @@ def safe_convert_to_numeric(df: pd.DataFrame, col_name: str, safety_threshold: f
 
         # Return original DataFrame in case of failure to maintain continuity
         return df
+    
