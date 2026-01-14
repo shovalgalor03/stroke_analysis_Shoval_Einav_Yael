@@ -37,7 +37,13 @@ def plot_stacked_distribution(df, group_col='risk_group', target_col='stroke'):
         plt.ylabel('Percentage (%)')
         plt.xlabel('Risk Group')
         plt.xticks(rotation=45)
-        plt.legend(title='Outcome', labels=['Healthy', 'Stroke'], loc='upper right')
+
+        # --- LEGEND POSITION ---
+        # Move legend outside to the right to avoid overlapping data
+        # bbox_to_anchor=(1.02, 1): Places it just outside the axes
+        # loc='upper left': Anchors the legend's top-left corner to that point
+        plt.legend(title='Outcome', labels=['Healthy', 'Stroke'], 
+                   bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
 
         # Add percentage labels
         for container in ax.containers:
