@@ -6,9 +6,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score
-import logging
+from src.logger import setup_logger
 
-logger = logging.getLogger(__name__) # --- Logger Setup ---
+logger = setup_logger("cluster_analysis") # Initialize the logger
 
 # --- Function 1: Find Optimal K (Elbow Method) ---
 def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:

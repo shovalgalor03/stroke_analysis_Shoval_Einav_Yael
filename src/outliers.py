@@ -4,7 +4,6 @@ from src.logger import setup_logger
 logger = setup_logger("Outlier_Detection")
 
 # Function 1: Calculation & Validation
-
 def calculate_iqr_bounds(df: pd.DataFrame, col_name: str, threshold: float) -> tuple:
     """
     Validates input and calculates IQR bounds.
@@ -47,7 +46,6 @@ def calculate_iqr_bounds(df: pd.DataFrame, col_name: str, threshold: float) -> t
         return None
     
 # Function 2: Execution (Filtering)
-
 def remove_outliers_iqr(df: pd.DataFrame, col_name: str, threshold: float = 1.5) -> pd.DataFrame:
     """
     Manages the outlier removal process. 
@@ -82,7 +80,6 @@ def remove_outliers_iqr(df: pd.DataFrame, col_name: str, threshold: float = 1.5)
         return df[mask_valid].copy()
 
     # --- Specific Error Handling for Execution Phase ---
-    
     except KeyError as e:
         # Could happen if column is dropped during execution (unlikely but possible)
         logger.error(f"Execution Error - Column lost: {e}")

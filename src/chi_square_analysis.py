@@ -2,11 +2,9 @@ import pandas as pd
 from scipy.stats import chi2_contingency
 from src.logger import setup_logger
 
-# Initialize the logger
-logger = setup_logger("Chi_Square_Analysis")
+logger = setup_logger("Chi_Square_Analysis") # Initialize the logger
 
 # Function 1: Data Preparation
-
 def create_contingency_table(df: pd.DataFrame, var1: str, var2: str) -> pd.DataFrame:
     """
     Validates input data, handles missing values, and generates a contingency table.
@@ -68,7 +66,6 @@ def create_contingency_table(df: pd.DataFrame, var1: str, var2: str) -> pd.DataF
         return None
 
 # Function 2: Statistical Execution
-
 def run_chi_square_test(df: pd.DataFrame, independent_var: str, dependent_var: str, alpha: float = 0.05) -> dict:
     """
     Orchestrates the Chi-Square Test of Independence.
@@ -120,7 +117,6 @@ def run_chi_square_test(df: pd.DataFrame, independent_var: str, dependent_var: s
         }
 
     # --- Specific Error Handling for Execution Phase ---
-    
     except TypeError as e:
         # Catches errors like comparing p_val (float) with alpha (string)
         logger.error(f"Execution Error - Type Mismatch: {e}")
