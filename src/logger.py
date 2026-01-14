@@ -1,4 +1,4 @@
-# הקובץ: src/utils.py
+# file: src/utils.py
 import logging
 
 def setup_logger(name_of_log):
