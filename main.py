@@ -1,8 +1,6 @@
 import pandas as pd
 from src.logger import setup_logger
 
-
-
 # A. Loading
 from src.load_csv import load_dataset
 
@@ -19,7 +17,10 @@ from src.outliers import remove_outliers_iqr
 from src.chi_square_analysis import run_chi_square_test
 from src.relative_risk_analysis import run_full_analysis_pipeline
 
-# F. Clustering
+# F. visualizations
+from src.visualizations import plot_all_visualizations
+
+# G. Clustering
 from src.cluster_analysis import find_optimal_k,perform_clustering, plot_clusters_pca, plot_risk_analysis, analyze_cluster_profile, plot_stroke_capture_rate
 
 # Initialize Logger
@@ -54,14 +55,14 @@ def main():
     # 3. Fill Missing Values
     # (Essential because K-Means and some stats fail with NaNs)
     try:
-        df = fill_missing_with_median(df, strategy='median')
+        df = fill_missing_with_median(df,'bmi')
     except NameError:
         logger.warning("fill_missing_with_median not found. Skipping (Clustering might fail).")
 
     # --- Step 3: Outlier Detection
-    logger.info("--- Phase 2: Outlier Detection ---")
-    df = remove_outliers_iqr(df, 'bmi', threshold=2.0)
-    df = remove_outliers_iqr(df, 'avg_glucose_level', threshold=1.5)
+    #logger.info("--- Phase 2: Outlier Detection ---")
+    #df = remove_outliers_iqr(df, 'bmi', threshold=2.0)
+    #df = remove_outliers_iqr(df, 'avg_glucose_level', threshold=1.5)
 
     # --- Step 4: Feature Engineering
     logger.info("--- Phase 3: Feature Engineering ---")
@@ -88,8 +89,15 @@ def main():
     else:
         logger.error("Skipping statistical analysis: 'risk_group' column missing.")
 
+    # --- Step 6: Visualizations
+    logger.info("Generating visualizations...")
+    results_df = run_full_analysis_pipeline(df)
+    plot_all_visualizations(df, results_df)
 
-    # --- Step 6: Cluster Analysis (Extra)
+    logger.info("All visualizations have been successfully saved to the project folder.")
+
+
+    # --- Step 7: Cluster Analysis (Extra)
     logger.info("--- Phase 5: Cluster Analysis ---")
 
     try:

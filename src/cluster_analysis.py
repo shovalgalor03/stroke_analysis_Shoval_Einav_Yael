@@ -17,7 +17,7 @@ def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
         Returns the statistically best K (calculated internally using Silhouette, 
         but only showing Elbow plot as requested).
         """
-    logger.info(f"START: Searching for optimal K (range: 2 to {max_k}).")
+    logger.info(f"START: Searching for optimal K (range: 0 to {max_k}).")
 
     try:
         # 1. Validation checks
@@ -35,26 +35,41 @@ def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
         # 3. Calculation Loop
         inertia = []
         silhouette_scores = []
-        k_range = range(2, max_k + 1)
+        k_range = range(1, max_k + 1)
 
         logger.info("Calculating metrics for each K...")
         for k in k_range:
             kmeans = KMeans(n_clusters=k, random_state=1, n_init=10)
             labels = kmeans.fit_predict(X_scaled)
-            
             inertia.append(kmeans.inertia_)
-            silhouette_scores.append(silhouette_score(X_scaled, labels))
-
+            
+            if k >= 2:
+                silhouette_scores.append(silhouette_score(X_scaled, labels))
+            else:
+            # Placeholder for k=1 since silhouette is not defined
+                silhouette_scores.append(-1)
+            
         # 4. Plotting (Only Elbow Method)
         logger.info("Generating Elbow plot...")
-        plt.figure(figsize=(8, 5))
-        plt.plot(k_range, inertia, marker='o', linestyle='--', color='b')
+        plt.figure(figsize=(14, 8))
+        plt.plot(k_range, inertia, marker='o', linestyle='--', color='b', linewidth=2)
+        
+        padding_y = (max(inertia) - min(inertia)) * 0.2  # Adjust Y-axis: Focus on the actual data range rather than starting from 0
+        plt.ylim(min(inertia) - padding_y, max(inertia) + padding_y)
+        
+        plt.xlim(min(k_range) - 0.5, max(k_range) + 0.5) # Adjust X-axis: Set limits strictly to the range of k
+        plt.xticks(k_range)
+        
         plt.title('Elbow Method (Inertia Analysis)')
         plt.xlabel('Number of Clusters (k)')
         plt.ylabel('Inertia (Lower is better)')
         plt.grid(True, alpha=0.3)
-        plt.show()
-        
+
+        plt.tight_layout()
+        plt.savefig("Elbow Method")
+        plt.close()
+        logger.info("Saved: Elbow Method")
+
         # 5. Determine best K automatically
         # We use the silhouette max internally to give a good default suggestion
         best_k_index = np.argmax(silhouette_scores)
@@ -96,7 +111,7 @@ def perform_clustering(df: pd.DataFrame, n_clusters: int = 2) -> pd.DataFrame:
         X_scaled = pd.DataFrame(scaler.fit_transform(X_encoded), columns=X_encoded.columns)
         
         # 3. Running Model
-        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        kmeans = KMeans(n_clusters=n_clusters, random_state=1, n_init=10)
         clusters = kmeans.fit_predict(X_scaled)
         
         # 4. Saving Results
@@ -152,13 +167,15 @@ def plot_clusters_pca(df_clustered: pd.DataFrame):
         plt.legend(title='Cluster Group')
         plt.grid(True, alpha=0.3)
         
-        logger.info("SUCCESS: PCA Plot generated.")
-        plt.show()
+        plt.tight_layout()
+        plt.savefig("plot_clusters_pca")
+        plt.close()
+        logger.info("Saved: plot_clusters_pca")
 
     except Exception as e:
         logger.error(f"PCA Visualization failed: {e}")
 
-# --- Function 4: Profile Analysis (Who is Who?) ---
+# --- Function 4: Profile Analysis ---
 def analyze_cluster_profile(df_clustered: pd.DataFrame):
     """
     Generates a statistical profile for each cluster.
@@ -198,9 +215,6 @@ def analyze_cluster_profile(df_clustered: pd.DataFrame):
     except Exception as e:
         logger.error(f"Profiling failed: {e}")
 
-    except Exception as e:
-        logger.error(f"Profiling failed: {e}")
-
 # --- Function 5: Risk Bar Chart ---
 def plot_risk_analysis(summary_table: pd.DataFrame):
     """
@@ -218,8 +232,9 @@ def plot_risk_analysis(summary_table: pd.DataFrame):
         ax = sns.barplot(data=summary_table, 
             x='cluster', y='stroke_risk_%', palette='Reds')
         
-        ax.bar_label(ax.containers[0], fmt='%.1f%%', padding=3, fontweight='bold') # Add labels
-
+        for container in ax.containers:
+            ax.bar_label(container, fmt='%.1f%%', padding=3, fontweight='bold')
+        
         plt.title('Stroke Risk by Cluster', fontsize=14, fontweight='bold')
         plt.ylabel('Risk (%)')
         plt.xlabel('Cluster Group')
@@ -228,8 +243,10 @@ def plot_risk_analysis(summary_table: pd.DataFrame):
         max_risk = summary_table['stroke_risk_%'].max()
         plt.ylim(0, max_risk * 1.2) 
         
-        logger.info("SUCCESS: Risk Chart generated.")
-        plt.show()
+        plt.tight_layout()
+        plt.savefig("plot_risk_analysis")
+        plt.close()
+        logger.info("Saved: plot_risk_analysis") 
 
     except Exception as e:
         logger.error(f"Risk Chart failed: {e}")
@@ -274,8 +291,11 @@ def plot_stroke_capture_rate(df_clustered: pd.DataFrame):
         
         plt.title(f'Stroke Capture Rate\n(Coverage of {int(total_strokes)} total patients)', fontsize=14, fontweight='bold')
         
-        logger.info("SUCCESS: Capture Rate Chart generated.")
-        plt.show()
+        plt.tight_layout()
+        plt.savefig("plot_stroke_capture_rate")
+        plt.close()
+        logger.info("Saved: plot_stroke_capture_rate") 
+
 
     except Exception as e:
         logger.error(f"Capture Rate Plot failed: {e}")
