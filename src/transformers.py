@@ -3,8 +3,7 @@ import numpy as np
 from pandas.api.types import is_numeric_dtype
 from src.logger import setup_logger
 
-# Initialize a single logger for this module
-logger = setup_logger("Feature_Engineering")
+logger = setup_logger("Feature_Engineering") # Initialize a single logger for this module
 
 def convert_continuous_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
     """

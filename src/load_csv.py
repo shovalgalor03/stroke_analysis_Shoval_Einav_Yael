@@ -2,11 +2,7 @@ import pandas as pd
 import os
 from src.logger import setup_logger  # Import the central logger
 
-#Create a unique logger for this file
-from src.logger import setup_logger  # <--- Change: Import the central logger
-
-# <--- Change: Create a unique logger for this file
-logger = setup_logger("Data_Loading")
+logger = setup_logger("Data_Loading") # Create a unique logger for this file
 
 def load_dataset(file_path):
     """
@@ -27,15 +23,12 @@ def load_dataset(file_path):
         otherwise, None is returned.
     """
     try:
-        # Check that the file exists
-        if not os.path.exists(file_path):
+        if not os.path.exists(file_path): # Check that the file exists
             raise FileNotFoundError(f"File not found: {file_path}")
 
-        # <--- Change: Log process start
-        logger.info(f"Attempting to load dataset from {file_path}")
+        logger.info(f"Attempting to load dataset from {file_path}") # Log process start
 
-        # Load the dataset
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path) # Load the dataset
 
         # Integrity checks
         assert not df.empty, "Dataset is empty."
@@ -44,10 +37,7 @@ def load_dataset(file_path):
         # Added check for row count based on project checklist
         assert df.shape[0] >= 1000, "Dataset must contain at least 1000 rows to meet the project requirements."
 
-        # <--- Change: Log success with shape info
-        logger.info(
-            f"Dataset loaded successfully. Shape: {df.shape}"
-        )
+        logger.info(f"Dataset loaded successfully. Shape: {df.shape}") # Log success with shape info
 
         return df
 
