@@ -14,91 +14,65 @@ logger = setup_logger("cluster_analysis") # Initialize the logger
 # --- Function 1: Find Optimal K (Elbow Method) ---
 def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
     """
-        Plots the Elbow Method (Inertia) to help determine the optimal number of clusters.
-        Returns the statistically best K (calculated internally using Silhouette, 
-        but only showing Elbow plot as requested).
-        """
-    logger.info(f"START: Searching for optimal K (range: 0 to {max_k}).")
+    Plots the Elbow Method (Inertia) to determine the optimal number of clusters.
+    Cleaned version for professional academic presentation.
+    """
+    logger.info(f"START: Searching for optimal K (range: 1 to {max_k}).")
 
     try:
         # 1. Validation checks
         if df.empty:
             raise ValueError("Input DataFrame is empty.")
         
-        assert max_k >= 2, f"Input Error: max_k must be at least 2, got {max_k}."
-        assert len(df) > max_k, "Data Error: Not enough data points for the requested number of clusters."
-
         # 2. Data Preparation (Encoding + Scaling)
-        logger.info("Preparing data for optimization analysis...")
         X_encoded = pd.get_dummies(df, drop_first=True)
-        X_scaled = pd.DataFrame(StandardScaler().fit_transform(X_encoded), columns=X_encoded.columns)
+        X_scaled = StandardScaler().fit_transform(X_encoded)
 
         # 3. Calculation Loop
         inertia = []
         silhouette_scores = []
         k_range = range(1, max_k + 1)
 
-        logger.info("Calculating metrics for each K...")
         for k in k_range:
-            kmeans = KMeans(n_clusters=k, random_state=1, n_init=10)
+            kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
             labels = kmeans.fit_predict(X_scaled)
             inertia.append(kmeans.inertia_)
             
             if k >= 2:
                 silhouette_scores.append(silhouette_score(X_scaled, labels))
             else:
-            # Placeholder for k=1 since silhouette is not defined
                 silhouette_scores.append(-1)
             
-        # 4. Plotting (Elbow Method)
-        logger.info("Generating Elbow plot...")
-        # Visual Adjustment 1: Tall and narrow aspect ratio 
-        # (Stretches the graph vertically to emphasize the slope)
-        plt.figure(figsize=(6, 9))
+        # 4. Plotting (Fixed Visualization)
+        plt.figure(figsize=(10, 8)) 
         
-        # Visual Adjustment 2: Thicker lines and larger markers
-        plt.plot(k_range, inertia, marker='o', linestyle='-', color='b', 
-                 linewidth=4, markersize=12, markeredgecolor='black')
+        # Using consistent red color from the project palette
+        plt.plot(k_range, inertia, marker='o', linestyle='-', color="#2669de", 
+                 linewidth=2, markersize=8)
         
-        # Visual Adjustment 3: Aggressive Zoom on X-Axis
-        # We cut off the "long tail" (showing only up to 4.5). 
-        # This removes the flattening effect at higher k values.
-        plt.xlim(0.8, 4.5) 
-        
-        # Visual Adjustment 4: Crop the "Dead Space" on Y-Axis
-        # Instead of starting from 0, we start just below the minimum value.
-        # This forces the drop to occupy the entire vertical space of the plot.
-        min_val = min(inertia)
-        max_val = max(inertia)
-        plt.ylim(min_val * 0.90, max_val * 1.05)
-        
-        # Formatting
-        plt.title('Elbow Method (Inertia Analysis)', fontsize=14, fontweight='bold')
+        # Formatting for clarity
+        plt.title('Elbow Method for Optimal K', fontsize=14, fontweight='bold')
         plt.xlabel('Number of Clusters (k)', fontsize=12, fontweight='bold')
-        plt.ylabel('Inertia (Lower is better)', fontsize=12, fontweight='bold')
+        plt.ylabel('Inertia (In-cluster sum of squares)', fontsize=12, fontweight='bold')
+        plt.xticks(k_range) # Show all numbers from 1 to 10
+        plt.grid(True, linestyle='--', alpha=0.6)
         
-        # horizontal grid only (to help compare heights)
-        plt.grid(axis='y', linestyle='--', alpha=0.5)
-        
-        # Show only relevant integer ticks on X (1, 2, 3, 4)
-        plt.xticks(range(1, 5))
-        
+        # Save with explicit .png extension
         plt.tight_layout()
-        plt.savefig("Elbow_Method.png")
+        plt.savefig("elbow_method_k.png", dpi=300)
         plt.close()
-        logger.info("Saved: Elbow_Method.png")
+        logger.info("Saved: elbow_method_k.png")
 
-        # 5. Determine best K automatically
-        # We use the silhouette max internally to give a good default suggestion
+        # 5. Determine best K
         best_k_index = np.argmax(silhouette_scores)
         best_k = k_range[best_k_index]
         
-        logger.info(f"Optimization complete. Calculated Best K: {best_k}")
+        logger.info(f"Optimization complete. Best K: {best_k}")
         return best_k
 
     except Exception as e:
-        logger.error(f"Optimization process failed: {e}")
-        return 2 # Fallback default
+        logger.error(f"Optimization failed: {e}")
+        return 2 # Safe fallback
         
     except AssertionError as e:
         logger.error(f"Integrity Check Failed: {e}")
@@ -174,124 +148,120 @@ def plot_clusters_pca(df_clustered: pd.DataFrame):
         pca_df['cluster'] = df_clustered['cluster'].values
 
         # 4. Plot
+        GROUP_COLORS = {0: '#fc9272', 1: '#de2d26'} # Mapping clusters to project colors
+
         plt.figure(figsize=(10, 6))
         sns.scatterplot(x='PC1', y='PC2', 
-            hue='cluster', data=pca_df, 
-            palette='viridis', s=60, alpha=0.7)
+                        hue='cluster', data=pca_df, 
+                        palette=GROUP_COLORS, s=60, alpha=0.7)
         
-        plt.title('Patient Segments Visualization (PCA)', fontsize=14)
-        plt.xlabel('Principal Component 1')
-        plt.ylabel('Principal Component 2')
-        plt.legend(title='Cluster Group')
-        plt.grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        plt.savefig("plot_clusters_pca")
+        plt.title('Patient Segments Visualization (PCA)', fontsize=14, fontweight='bold')
+        plt.legend(title='Patient Group', labels=['Group A', 'Group B'])
+        plt.savefig("plot_clusters_pca.png", dpi=300)
         plt.close()
-        logger.info("Saved: plot_clusters_pca")
 
     except Exception as e:
         logger.error(f"PCA Visualization failed: {e}")
         
-# --- Function 4: Profile Analysis (Auto-fit & Bold Design) ---
-def analyze_cluster_profile(df_clustered: pd.DataFrame):
+# --- Function 4: Get Cluster Profiles Data ---
+def get_cluster_profiles(df_clustered: pd.DataFrame) -> pd.DataFrame:
     """
-    Generates a professionally styled vertical profile table with bold headers 
-    and auto-fitted column widths.
+    Analyzes the clusters and prepares a formatted vertical DataFrame.
+    Calculates N, numeric means, and categorical modes with percentages.
     """
-    logger.info("START: Generating Bold & Auto-fitted Vertical Profile Table.")
+    logger.info("Analyzing cluster characteristics...")
+
+    # 1. Map groups and calculate Sample Size (N)
+    df_p = df_clustered.copy()
+    df_p['group'] = df_p['cluster'].map({0: 'Group A', 1: 'Group B'})
+    n_counts = df_p['group'].value_counts()
+    
+    # 2. Numeric Analysis (Means)
+    num_cols = ['stroke', 'age', 'hypertension', 'heart_disease', 'avg_glucose_level', 'bmi']
+    existing_num = [c for c in num_cols if c in df_p.columns]
+    numeric_profile = df_p.groupby('group')[existing_num].mean()
+
+    # 3. Categorical Analysis (Mode + Percentage)
+    cat_cols = ['gender', 'ever_married', 'work_type', 'Residence_type', 'smoking_status']
+    existing_cat = [c for c in cat_cols if c in df_p.columns]
+    
+    cat_results = {}
+    for group in ['Group A', 'Group B']:
+        group_data = df_p[df_p['group'] == group]
+        group_stats = {}
+        for col in existing_cat:
+            mode_val = group_data[col].mode()[0]
+            percentage = (group_data[col] == mode_val).mean() * 100
+            group_stats[col] = f"{mode_val} ({percentage:.1f}%)"
+        cat_results[group] = group_stats
+    
+    categorical_profile = pd.DataFrame(cat_results).T
+
+    # 4. Assembly and Transpose to Vertical format
+    combined = pd.concat([numeric_profile, categorical_profile], axis=1)
+    combined.insert(0, 'N (Patients)', n_counts)
+    
+    return combined.T # Returns vertical table (Metrics as rows)
+
+    # --- Function 5: Plot Styled Profile Table (FIXED) ---
+def plot_cluster_profile_table(profile_df: pd.DataFrame, filename: str = "cluster_profile_table.png"):
+    """
+    Renders a formatted vertical table as a high-quality PNG image.
+    Handles bold headers, auto-fitting, and consistent group colors.
+    """
+    logger.info(f"Generating styled table image: {filename}")
 
     try:
-        # 1. Data Prep and Mapping
-        df_p = df_clustered.copy()
-        df_p['group'] = df_p['cluster'].map({0: 'Group A', 1: 'Group B'})
-        n_counts = df_p['group'].value_counts()
-        
-        # 2. Numeric Analysis (Prioritizing N and Stroke Risk)
-        num_cols = ['stroke', 'age', 'hypertension', 'heart_disease', 'avg_glucose_level', 'bmi']
-        existing_num = [c for c in num_cols if c in df_p.columns]
-        numeric_profile = df_p.groupby('group')[existing_num].mean()
-
-        # 3. Categorical Analysis (Showing % to prove uniqueness)
-        cat_cols = ['gender', 'ever_married', 'work_type', 'Residence_type', 'smoking_status']
-        existing_cat = [c for c in cat_cols if c in df_p.columns]
-        
-        cat_results = {}
-        for group in ['Group A', 'Group B']:
-            group_data = df_p[df_p['group'] == group]
-            group_stats = {}
-            for col in existing_cat:
-                mode_val = group_data[col].mode()[0]
-                perc = (group_data[col] == mode_val).mean() * 100
-                group_stats[col] = f"{mode_val} ({perc:.1f}%)"
-            cat_results[group] = group_stats
-        
-        categorical_profile = pd.DataFrame(cat_results).T
-
-        # 4. Final Data Assembly
-        combined = pd.concat([numeric_profile, categorical_profile], axis=1)
-        combined.insert(0, 'N (Patients)', n_counts)
-        vertical_table = combined.T
-        vertical_table.columns = ['Group A', 'Group B']
-
-        # 5. Visual Rendering with Matplotlib
-        fig, ax = plt.subplots(figsize=(12, 14)) # Slightly wider for auto-fit
+        fig, ax = plt.subplots(figsize=(12, 14))
         ax.axis('off')
 
-        # Formatter for numbers
-        display_df = vertical_table.map(
-            lambda x: f"{x:.2f}" if isinstance(x, (float, int)) and not isinstance(x, bool) else str(x)
-        )
+        # Format numeric values for display
+        display_df = profile_df.map(
+            lambda x: f"{x:.2f}" if isinstance(x, (float, int)) and not isinstance(x, bool) else str(x))
 
-        # Create table
+        # Create the table
         plt_table = ax.table(
             cellText=display_df.values,
             rowLabels=display_df.index,
             colLabels=display_df.columns,
-            loc='center',
-            cellLoc='center'
-        )
+            loc='center', cellLoc='center')
 
-        # --- ADVANCED STYLING: BOLD & AUTO-FIT ---
+        # Apply advanced styling
         plt_table.auto_set_font_size(False)
         plt_table.set_fontsize(12)
-        
-        # Auto-adjust column widths based on text length
-        plt_table.auto_set_column_width(col=list(range(-1, len(display_df.columns)))) 
-        
-        # Vertical scaling for readability
+        plt_table.auto_set_column_width(col=list(range(-1, len(display_df.columns))))
         plt_table.scale(1.2, 3.5)
 
-        # Style Headers (Group A, Group B)
-        header_colors = ['#fc9272', '#de2d26']
+        # Styling headers (Bold + Group Colors)
+        header_colors = ['#fc9272', '#de2d26'] 
         for col_idx, color in enumerate(header_colors):
             cell = plt_table[0, col_idx]
             cell.set_facecolor(color)
             cell.set_text_props(color='white', fontweight='bold', fontsize=14)
 
-        # Style Row Labels (The Index column)
+        # Styling index column (Bold labels)
         for row_idx in range(len(display_df) + 1):
-            cell = plt_table[row_idx, -1] # Index cell
-            cell.set_text_props(fontweight='bold', color='#2c3e50')
-            cell.set_facecolor('#f2f2f2')
+            plt_table[row_idx, -1].set_text_props(fontweight='bold', color='#2c3e50')
+            plt_table[row_idx, -1].set_facecolor('#f2f2f2')
 
-        # Zebra Stripes for rows
+        # Zebra striping for readability
         for row_idx in range(1, len(display_df) + 1):
             if row_idx % 2 == 0:
                 for col_idx in range(len(display_df.columns)):
                     plt_table[row_idx, col_idx].set_facecolor('#fafafa')
 
-        plt.title('Clinical Profile Comparison\nGroup A vs Group B', 
+        plt.title('Clinical Profile Comparison: Group A vs Group B', 
                   fontweight='bold', fontsize=18, pad=60, color='#2c3e50')
         
-        plt.savefig("cluster_profile_table.png", bbox_inches='tight', dpi=300)
+        plt.show()
+        plt.savefig(filename, bbox_inches='tight', dpi=300) 
         plt.close()
-        logger.info("Saved Final Styled Table: cluster_profile_table.png")
+        logger.info(f"Table image saved successfully as: {filename}")
 
     except Exception as e:
-        logger.error(f"Styled profiling failed: {e}")
-        
-# --- Function 5: Risk Bar Chart ---
+        logger.error(f"Failed to plot styled table: {e}")
+                
+# --- Function 6: Risk Bar Chart ---
 def plot_risk_analysis(summary_table: pd.DataFrame):
     """
     Visualizes stroke risk per group using a tall and narrow Bar Chart.
@@ -329,7 +299,7 @@ def plot_risk_analysis(summary_table: pd.DataFrame):
     except Exception as e:
         logger.error(f"Risk Chart failed: {e}")
         
-# --- Function 6: Capture Rate Pie Chart (The "Catch") ---
+# --- Function 7: Capture Rate Pie Chart (The "Catch") ---
 def plot_stroke_capture_rate(df_clustered: pd.DataFrame):
     """
     Visualizes what percentage of total stroke patients fall into each group.

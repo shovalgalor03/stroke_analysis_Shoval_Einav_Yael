@@ -21,7 +21,7 @@ from src.relative_risk_analysis import run_full_analysis_pipeline
 from src.visualizations import plot_all_visualizations
 
 # G. Clustering
-from src.cluster_analysis import find_optimal_k,perform_clustering, plot_clusters_pca, plot_risk_analysis, analyze_cluster_profile, plot_stroke_capture_rate
+from src.cluster_analysis import find_optimal_k,perform_clustering, plot_clusters_pca, plot_risk_analysis, get_cluster_profiles, plot_cluster_profile_table, plot_stroke_capture_rate
 
 # Initialize Logger
 logger = setup_logger("Main_Runner")
@@ -109,8 +109,9 @@ def main():
         
         df_clustered['stroke'] = df['stroke'] # Re-attach 'stroke' diagnosis to validate the clusters
         
-        analyze_cluster_profile(df_clustered) # Generate detailed profiles for each cluster group
-        
+        profile_data = get_cluster_profiles(df_clustered) 
+        plot_cluster_profile_table(profile_data, filename="cluster_profile_table.png")   
+             
         # Calculate percentage of stroke cases per cluster
         df_clustered['stroke'] = pd.to_numeric(df_clustered['stroke'], errors='coerce') # Ensure 'stroke' is numeric to avoid calculation errors
         cluster_summary = df_clustered.groupby('cluster')['stroke'].mean().reset_index()
@@ -118,8 +119,8 @@ def main():
         cluster_summary['stroke_risk_%'] *= 100
         
         # Visualization of cluster performance
+        plot_stroke_capture_rate(df_clustered)   
         plot_risk_analysis(cluster_summary)
-        plot_stroke_capture_rate(df_clustered)     
         
         logger.info(f"SUCCESS: Clustering section complete with {optimal_k} clusters.")
    
