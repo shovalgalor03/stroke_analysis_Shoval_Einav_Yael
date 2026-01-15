@@ -150,13 +150,10 @@ def plot_clusters_pca(df_clustered: pd.DataFrame):
         pca_df['Patient Group'] = df_clustered['cluster'].map({0: 'Group A', 1: 'Group B'})
         
         # 4. Plot
-        GROUP_COLORS = {0: '#fc9272', 1: '#de2d26'}        
+        GROUP_COLORS = {'Group A': '#fc9272', 'Group B': '#de2d26'}   
+        plt.figure(figsize=(10, 6))
         sns.scatterplot(x='PC1', y='PC2', hue='Patient Group', data=pca_df, 
                 palette=GROUP_COLORS, s=60, alpha=0.7, hue_order=['Group A', 'Group B'])        
-        plt.figure(figsize=(10, 6))
-        sns.scatterplot(x='PC1', y='PC2', 
-                        hue='cluster', data=pca_df, 
-                        palette=GROUP_COLORS, s=60, alpha=0.7)
         
         plt.title('Patient Segments Visualization (PCA)', fontsize=14, fontweight='bold')
         plt.legend(title='Patient Group')
