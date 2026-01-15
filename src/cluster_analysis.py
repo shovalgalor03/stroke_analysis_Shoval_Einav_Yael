@@ -42,16 +42,22 @@ def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
                 silhouette_scores.append(silhouette_score(X_scaled, labels))
             else:
                 silhouette_scores.append(-1)
+        
+        # 4. Determine best K    
+        best_k_index = np.argmax(silhouette_scores)
+        best_k = k_range[best_k_index]
+        best_inertia = inertia[best_k_index]
             
-        # 4. Plotting (Fixed Visualization)
+        # 5. Plotting (Fixed Visualization)
         plt.figure(figsize=(10, 8)) 
         
-        # Using consistent red color from the project palette
-        plt.plot(k_range, inertia, marker='o', linestyle='-', color="#2669de", 
-                 linewidth=2, markersize=8)
+        plt.plot(k_range, inertia, marker='o', linestyle='-', color="#2669de", linewidth=2, markersize=8, 
+                 label='Inertia Trend') # Plot the Elbow line in blue
+        plt.plot(best_k, best_inertia, marker='o', color='red', markersize=15, fillstyle='none', 
+                 markeredgewidth=3, label=f'Optimal K: {best_k}') # Highlight the Best K in Red
         
         # Formatting for clarity
-        plt.title('Elbow Method for Optimal K', fontsize=14, fontweight='bold')
+        plt.title('Elbow Method for Optimal K', fontsize=17, fontweight='bold')
         plt.xlabel('Number of Clusters (k)', fontsize=12, fontweight='bold')
         plt.ylabel('Inertia (In-cluster sum of squares)', fontsize=12, fontweight='bold')
         plt.xticks(k_range) # Show all numbers from 1 to 10
@@ -63,10 +69,6 @@ def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
         plt.close()
         logger.info("Saved: elbow_method_k.png")
 
-        # 5. Determine best K
-        best_k_index = np.argmax(silhouette_scores)
-        best_k = k_range[best_k_index]
-        
         logger.info(f"Optimization complete. Best K: {best_k}")
         return best_k
 
@@ -145,18 +147,19 @@ def plot_clusters_pca(df_clustered: pd.DataFrame):
 
         # 3. Create DataFrame for plotting
         pca_df = pd.DataFrame(data=pca_components, columns=['PC1', 'PC2'])
-        pca_df['cluster'] = df_clustered['cluster'].values
-
+        pca_df['Patient Group'] = df_clustered['cluster'].map({0: 'Group A', 1: 'Group B'})
+        
         # 4. Plot
-        GROUP_COLORS = {0: '#fc9272', 1: '#de2d26'} # Mapping clusters to project colors
-
+        GROUP_COLORS = {0: '#fc9272', 1: '#de2d26'}        
+        sns.scatterplot(x='PC1', y='PC2', hue='Patient Group', data=pca_df, 
+                palette=GROUP_COLORS, s=60, alpha=0.7, hue_order=['Group A', 'Group B'])        
         plt.figure(figsize=(10, 6))
         sns.scatterplot(x='PC1', y='PC2', 
                         hue='cluster', data=pca_df, 
                         palette=GROUP_COLORS, s=60, alpha=0.7)
         
         plt.title('Patient Segments Visualization (PCA)', fontsize=14, fontweight='bold')
-        plt.legend(title='Patient Group', labels=['Group A', 'Group B'])
+        plt.legend(title='Patient Group')
         plt.savefig("plot_clusters_pca.png", dpi=300)
         plt.close()
 
@@ -207,67 +210,71 @@ def get_cluster_profiles(df_clustered: pd.DataFrame) -> pd.DataFrame:
 def plot_cluster_profile_table(profile_df: pd.DataFrame, filename: str = "cluster_profile_table.png"):
     """
     Renders a formatted vertical table as a high-quality PNG image.
-    Handles bold headers, auto-fitting, and consistent group colors.
+    Fixed scaling and visibility issues.
     """
     logger.info(f"Generating styled table image: {filename}")
 
     try:
-        fig, ax = plt.subplots(figsize=(12, 14))
+        # 1. Adjust figure size based on the number of rows
+        fig_height = max(6, len(profile_df) * 0.6)
+        fig, ax = plt.subplots(figsize=(8, fig_height))
         ax.axis('off')
 
-        # Format numeric values for display
+        # 2. Format numeric values for display
         display_df = profile_df.map(
             lambda x: f"{x:.2f}" if isinstance(x, (float, int)) and not isinstance(x, bool) else str(x))
+        display_df = display_df[['Group A', 'Group B']]
 
-        # Create the table
+        # 3. Create the table
         plt_table = ax.table(
             cellText=display_df.values,
             rowLabels=display_df.index,
             colLabels=display_df.columns,
             loc='center', cellLoc='center')
 
-        # Apply advanced styling
+        # 4. Styling
         plt_table.auto_set_font_size(False)
-        plt_table.set_fontsize(12)
-        plt_table.auto_set_column_width(col=list(range(-1, len(display_df.columns))))
-        plt_table.scale(1.2, 3.5)
+        plt_table.set_fontsize(11)
+        # Reduced vertical scale from 3.5 to 2.2 for better fit
+        plt_table.scale(0.8, 2.2)
 
-        # Styling headers (Bold + Group Colors)
-        header_colors = ['#fc9272', '#de2d26'] 
+        # Style headers (Group A & Group B)
+        header_colors = ['#fc9272', '#de2d26']
         for col_idx, color in enumerate(header_colors):
             cell = plt_table[0, col_idx]
             cell.set_facecolor(color)
-            cell.set_text_props(color='white', fontweight='bold', fontsize=14)
+            cell.set_text_props(color='white', fontweight='bold', fontsize=12)
 
-        # Styling index column (Bold labels)
+        # Style row labels (Index)
         for row_idx in range(len(display_df) + 1):
-            plt_table[row_idx, -1].set_text_props(fontweight='bold', color='#2c3e50')
-            plt_table[row_idx, -1].set_facecolor('#f2f2f2')
-
-        # Zebra striping for readability
-        for row_idx in range(1, len(display_df) + 1):
-            if row_idx % 2 == 0:
-                for col_idx in range(len(display_df.columns)):
-                    plt_table[row_idx, col_idx].set_facecolor('#fafafa')
+            try:
+                # Row labels are at column -1
+                label_cell = plt_table[row_idx, -1]
+                label_cell.set_text_props(fontweight='bold', color='#2c3e50')
+                label_cell.set_facecolor('#f2f2f2')
+            except KeyError:
+                continue
 
         plt.title('Clinical Profile Comparison: Group A vs Group B', 
-                  fontweight='bold', fontsize=18, pad=60, color='#2c3e50')
+                  fontweight='bold', fontsize=16, pad=20, color='#2c3e50')
         
-        plt.show()
+        # 5. Save and explicit SHOW for VS Code
+        plt.tight_layout()
         plt.savefig(filename, bbox_inches='tight', dpi=300) 
         plt.close()
+        
         logger.info(f"Table image saved successfully as: {filename}")
 
     except Exception as e:
         logger.error(f"Failed to plot styled table: {e}")
-                
+                        
 # --- Function 6: Risk Bar Chart ---
 def plot_risk_analysis(summary_table: pd.DataFrame):
     """
     Visualizes stroke risk per group using a tall and narrow Bar Chart.
     """
     logger.info("START: Generating Risk Bar Chart.")
-    GROUP_COLORS = {'Group A': '#fc9272', 'Group B': '#de2d26'}
+    GROUP_COLORS = {'Group A': '#fc9272', 'Group B': '#de2d26'}   
     
     try:
         # Create mapping for group names
@@ -306,6 +313,7 @@ def plot_stroke_capture_rate(df_clustered: pd.DataFrame):
     """
     logger.info("START: Generating Capture Rate Pie Chart.")
     GROUP_COLORS = {'Group A': '#fc9272', 'Group B': '#de2d26'}
+
     
     try:
         total_strokes = df_clustered['stroke'].sum()
@@ -320,7 +328,7 @@ def plot_stroke_capture_rate(df_clustered: pd.DataFrame):
         capture_counts = capture_counts.sort_values('capture_%', ascending=False)
         colors = [GROUP_COLORS[g] for g in capture_counts['group_name']]
 
-        plt.figure(figsize=(8, 8))
+        plt.figure(figsize=(9, 9))
         
         plt.pie(capture_counts['capture_%'], 
                 labels=capture_counts['group_name'],
@@ -333,9 +341,9 @@ def plot_stroke_capture_rate(df_clustered: pd.DataFrame):
         
         # Add legend using patches to match bar chart colors
         legend_handles = [mpatches.Patch(color=color, label=group) for group, color in GROUP_COLORS.items()]
-        plt.legend(handles=legend_handles, title="Patient Group", loc="upper right", bbox_to_anchor=(1.15, 1))
-              
-        plt.title(f'Stroke Capture Rate\n(Total: {int(total_strokes)} patients)', fontsize=14, fontweight='bold')
+        plt.legend(handles=legend_handles, title="Patient Group", loc="upper left", 
+           bbox_to_anchor=(1.0, 1), fontsize=12, title_fontsize=14)              
+        plt.title(f'Stroke Capture Rate\n(Total: {int(total_strokes)} patients)', fontsize=18, fontweight='bold')
         
         plt.tight_layout()
         plt.savefig("plot_stroke_capture_rate.png")

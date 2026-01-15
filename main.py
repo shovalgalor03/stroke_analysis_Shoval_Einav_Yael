@@ -101,7 +101,7 @@ def main():
     logger.info("--- Phase 5: Cluster Analysis ---")
 
     try:
-        df_blind = remove_columns(df, columns_to_remove=['stroke']) # Prepare blind data by removing the target variable
+        df_blind = remove_columns(df, columns_to_remove=['stroke']) # removing the target variable and non-relevant column
         optimal_k = find_optimal_k(df_blind) # Automatically find the mathematically optimal number of clusters
         df_clustered = perform_clustering(df_blind, n_clusters=optimal_k) # Execute clustering algorithm using the discovered K
 
