@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from pandas.api.types import is_numeric_dtype
 from src.logger import setup_logger
-
+from src.constants import BMI_THRESHOLD, GLUCOSE_THRESHOLD
 logger = setup_logger("Feature_Engineering") # Initialize a single logger for this module
 
 def convert_continuous_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
@@ -27,11 +27,6 @@ def convert_continuous_to_categorical(df: pd.DataFrame) -> pd.DataFrame:
         for col in required_cols:
              if not is_numeric_dtype(df_cat[col]):
                  raise TypeError(f"Column '{col}' must be numeric type. Please clean data first.")
-
-        # --- 3. Logic Implementation ---
-        # Constants from Roadmap 
-        BMI_THRESHOLD = 30
-        GLUCOSE_THRESHOLD = 140
 
         # Create binary flags using np.where (Safe & Fast)
         df_cat['bmi_high'] = np.where(df_cat['bmi'] >= BMI_THRESHOLD, 1, 0)
