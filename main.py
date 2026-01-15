@@ -38,7 +38,7 @@ def run_scenario(df_base, remove_bmi, remove_glucose, scenario_title):
     
     # 2. Conditional Outlier Removal on the copy
     if remove_bmi:
-        df_temp = remove_outliers_iqr(df_temp, 'bmi', threshold=2.0)
+        df_temp = remove_outliers_iqr(df_temp, 'bmi', threshold=1.5)
     if remove_glucose:
         df_temp = remove_outliers_iqr(df_temp, 'avg_glucose_level', threshold=1.5)
         
