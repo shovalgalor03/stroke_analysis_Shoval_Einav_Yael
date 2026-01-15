@@ -11,6 +11,20 @@ from src.logger import setup_logger
 
 logger = setup_logger("cluster_analysis") # Initialize the logger
 
+def prepare_data(df: pd.DataFrame) -> np.ndarray:
+    """
+    Internal helper to encode and scale data for clustering.
+    """
+    # 1. Validation
+    if df.empty:
+        raise ValueError("Input DataFrame is empty.")
+    
+    # 2. Encoding and Scaling
+    X_encoded = pd.get_dummies(df, drop_first=True)
+    X_scaled = StandardScaler().fit_transform(X_encoded)
+    
+    return X_scaled
+
 # --- Function 1: Find Optimal K (Elbow Method) ---
 def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
     """
@@ -20,13 +34,7 @@ def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
     logger.info(f"START: Searching for optimal K (range: 1 to {max_k}).")
 
     try:
-        # 1. Validation checks
-        if df.empty:
-            raise ValueError("Input DataFrame is empty.")
-        
-        # 2. Data Preparation (Encoding + Scaling)
-        X_encoded = pd.get_dummies(df, drop_first=True)
-        X_scaled = StandardScaler().fit_transform(X_encoded)
+        X_scaled = prepare_data(df)
 
         # 3. Calculation Loop
         inertia = []
@@ -34,14 +42,14 @@ def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
         k_range = range(1, max_k + 1)
 
         for k in k_range:
-            kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-            labels = kmeans.fit_predict(X_scaled)
-            inertia.append(kmeans.inertia_)
+            kmeans = KMeans(n_clusters=k, random_state=1, n_init=10) # Initialize the model with k clusters
+            labels = kmeans.fit_predict(X_scaled) # assign a cluster label to each patient
+            inertia.append(kmeans.inertia_) # sum of squared distances within the group
             
             if k >= 2:
-                silhouette_scores.append(silhouette_score(X_scaled, labels))
+                silhouette_scores.append(silhouette_score(X_scaled, labels)) # Separation between the groups
             else:
-                silhouette_scores.append(-1)
+                silhouette_scores.append(-1) # Placeholder for k=1, silhouette score requires at least 2 clusters
         
         # 4. Determine best K    
         best_k_index = np.argmax(silhouette_scores)
@@ -85,7 +93,7 @@ def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
         raise e
 
 # --- Function 2: Perform Clustering ---
-def perform_clustering(df: pd.DataFrame, n_clusters: int = 2) -> pd.DataFrame:
+def perform_clustering(df: pd.DataFrame, X_scaled: np.ndarray, n_clusters: int = 2) -> pd.DataFrame:
     """
     Executes the full K-Means pipeline. 
     """
@@ -93,16 +101,9 @@ def perform_clustering(df: pd.DataFrame, n_clusters: int = 2) -> pd.DataFrame:
     df_clustered = df.copy() # Work on a copy to ensure data integrity
 
     try:
-        # 1. Validation
-        if df_clustered.empty:
-            raise ValueError("Input DataFrame is empty.")
-        
         assert n_clusters >= 2, f"Input Error: n_clusters must be at least 2, got {n_clusters}."
 
-        # 2. Encoding & Scaling
-        X_encoded = pd.get_dummies(df_clustered, drop_first=True)
-        scaler = StandardScaler()
-        X_scaled = pd.DataFrame(scaler.fit_transform(X_encoded), columns=X_encoded.columns)
+        X_scaled = prepare_data(df)
         
         # 3. Running Model
         kmeans = KMeans(n_clusters=n_clusters, random_state=1, n_init=10)
