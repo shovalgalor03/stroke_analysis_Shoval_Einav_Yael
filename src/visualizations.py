@@ -263,6 +263,118 @@ def plot_rr_lollipop(results_df):
     except Exception as e:
         logger.error(f"Lollipop Plot Error: {e}")
 
+# ==========================================================
+# PART 3: SCENARIO SPECIFIC VISUALIZATIONS  WITHOUT OUTLIERS
+# ==========================================================
+
+def plot_rr_forest_plot(results_df, title_suffix=""):
+    """
+    Generates a Forest Plot specifically for the multi-scenario analysis.
+    Accepts a 'title_suffix' to distinguish between different outlier scenarios.
+    """
+    logger.info(f"Generating Forest Plot for scenario: {title_suffix}")
+    
+    if results_df is None or results_df.empty:
+        logger.warning(f"No results to plot for {title_suffix}.")
+        return
+
+    plot_data = results_df.copy()
+    
+    # Calculate error bar sizes
+    error_lower = plot_data['RR'] - plot_data['CI_Lower']
+    error_upper = plot_data['CI_Upper'] - plot_data['RR']
+    error_lower = error_lower.fillna(0)
+    error_upper = error_upper.fillna(0)
+
+    # Create figure
+    plt.figure(figsize=(10, 6))
+    
+    plt.errorbar(
+        x=plot_data['RR'], 
+        y=plot_data['comparison'], 
+        xerr=[error_lower, error_upper], 
+        fmt='o', color='darkred', ecolor='gray', 
+        capsize=5, markersize=10, linewidth=2,
+        label='RR (95% CI)'
+    )
+
+    # Vertical line at RR=1
+    plt.axvline(x=1, color='black', linestyle='--', linewidth=1.5, label='No Difference')
+
+    # Dynamic Title based on the scenario
+    plt.title(f'Relative Risk Analysis\nScenario: {title_suffix}', fontsize=10, fontweight='bold')
+    plt.xlabel('Relative Risk (RR)', fontsize=12)
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
+    plt.legend()
+
+    # Add text labels
+    for i, row in plot_data.iterrows():
+        label = f"RR={row['RR']:.2f}\n(p={row['P_Value']:.3f})"
+        plt.text(row['RR'], i + 0.15, label, ha='center', fontsize=9, color='darkblue')
+
+    plt.tight_layout()
+    
+    # Save with a specific name so they don't overwrite each other
+    filename = f"RR_Forest_Plot_{title_suffix.replace(' ', '_')}.png"
+    plt.savefig(filename, dpi=300)
+    plt.close() # Close to free memory
+    logger.info(f"Saved: {filename}")
+
+
+def plot_results_table(results_df, title):
+    """
+    Renders the results DataFrame as a static image table.
+    This allows the table to appear in the 'Plots' pane of IDEs.
+    """
+    logger.info(f"Generating Results Table for: {title}")
+    
+    if results_df.empty:
+        return
+
+    # 1. Select and Rename Columns for cleaner display
+    display_df = results_df[['comparison', 'RR', 'CI_Lower', 'CI_Upper', 'P_Value', 'Significant_0.05']].copy()
+    display_df.columns = ['Group', 'RR', 'Lower CI', 'Upper CI', 'P-Value', 'Significant_0.05']
+    
+    # Round numbers for better visuals
+    display_df['RR'] = display_df['RR'].round(2)
+    display_df['Lower CI'] = display_df['Lower CI'].round(2)
+    display_df['Upper CI'] = display_df['Upper CI'].round(2)
+    display_df['P-Value'] = display_df['P-Value'].round(4)
+
+    # 2. Create Figure
+    fig, ax = plt.subplots(figsize=(12, 3)) # Short height for a table
+    ax.axis('off') # Turn off the X/Y axis lines
+
+    # 3. Create the Table
+    table = ax.table(
+        cellText=display_df.values,
+        colLabels=display_df.columns,
+        cellLoc='center',
+        loc='center',
+        bbox=[0, 0, 1, 1] # Stretch to fill frame
+    )
+
+    # 4. Styling
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    
+    # Add Colors to Headers
+    for (i, j), cell in table.get_celld().items():
+        if i == 0: # Header Row
+            cell.set_text_props(weight='bold', color='white')
+            cell.set_facecolor('#40466e') # Dark Blue background
+        else:
+            cell.set_facecolor('#f5f5f5') # Light Gray background for data
+
+    # 5. Add Title
+    plt.title(f"Results Table: {title}", fontsize=12, fontweight='bold', pad=10)
+    
+    # 6. Save and Show
+    plt.tight_layout()
+    filename = f"table_{title.replace(' ', '_')}.png"
+    plt.savefig(filename, dpi=200)
+    logger.info(f"Saved: {filename}")
+
 
 # ==========================================
 # MASTER FUNCTION
@@ -285,3 +397,4 @@ def plot_all_visualizations(df, results_df):
         logger.warning("No results_df provided. Skipping RR plots.")
         
     logger.info("--- Visualization Pipeline Completed ---")
+    

@@ -18,13 +18,43 @@ from src.chi_square_analysis import run_chi_square_test
 from src.relative_risk_analysis import run_full_analysis_pipeline
 
 # F. visualizations
-from src.visualizations import plot_all_visualizations
+from src.visualizations import plot_all_visualizations, plot_results_table, plot_rr_forest_plot
 
 # G. Clustering
 from src.cluster_analysis import find_optimal_k,perform_clustering, plot_clusters_pca, plot_risk_analysis, get_cluster_profiles, plot_cluster_profile_table, plot_stroke_capture_rate
 
 # Initialize Logger
 logger = setup_logger("Main_Runner")
+
+def run_scenario(df_base, remove_bmi, remove_glucose, scenario_title):
+    """
+    Helper function: Creates a TEMPORARY copy of data, removes outliers, 
+    and generates the requested table/plot without affecting the main pipeline.
+    """
+    logger.info(f"--- Generating Report: {scenario_title} ---")
+    
+    # 1. Work on a fresh copy (Safe!)
+    df_temp = df_base.copy()
+    
+    # 2. Conditional Outlier Removal on the copy
+    if remove_bmi:
+        df_temp = remove_outliers_iqr(df_temp, 'bmi', threshold=2.0)
+    if remove_glucose:
+        df_temp = remove_outliers_iqr(df_temp, 'avg_glucose_level', threshold=1.5)
+        
+    # 3. Feature Engineering on the copy
+    df_temp = convert_continuous_to_categorical(df_temp)
+    df_temp = create_composite_variable(df_temp)
+    
+    # 4. Generate Visualizations
+    if 'risk_group' in df_temp.columns:
+        results_df = run_full_analysis_pipeline(df_temp)
+        if not results_df.empty:
+            # Create the specific Table and Forest Plot image
+            plot_results_table(results_df, title=scenario_title)
+            plot_rr_forest_plot(results_df, title_suffix=scenario_title)
+        else:
+            logger.warning(f"No significant results found for {scenario_title}")
 
 def main():
     """
@@ -59,10 +89,19 @@ def main():
     except NameError:
         logger.warning("fill_missing_with_median not found. Skipping (Clustering might fail).")
 
-    # --- Step 3: Outlier Detection
-    #logger.info("--- Phase 2: Outlier Detection ---")
-    #df = remove_outliers_iqr(df, 'bmi', threshold=2.0)
-    #df = remove_outliers_iqr(df, 'avg_glucose_level', threshold=1.5)
+   # --- Step 3: Generate Outlier Scenarios (Tables & Plots) ---
+    # This block generates the 3 specific tables you asked for.
+    # It uses copies, so your main 'df' remains FULL for the rest of the analysis.
+    
+    logger.info("--- Phase 2: Generating Multi-Scenario Reports ---")
+    # Scenario 1: Without BMI Outliers
+    run_scenario(df, remove_bmi=True, remove_glucose=False, scenario_title="1. Without BMI Outliers")
+
+    # Scenario 2: Without Glucose Outliers
+    run_scenario(df, remove_bmi=False, remove_glucose=True, scenario_title="2. Without Glucose Outliers")
+
+    # Scenario 3: Without Any Outliers
+    run_scenario(df, remove_bmi=True, remove_glucose=True, scenario_title="3. Without Any Outliers")
 
     # --- Step 4: Feature Engineering
     logger.info("--- Phase 3: Feature Engineering ---")
