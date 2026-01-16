@@ -12153,3 +12153,84 @@ Group B  55.82             197.34  31.84          0.22           0.14    0.11   
 2026-01-16 17:27:09,919 - INFO - Optimization complete. Best K: 2
 2026-01-16 17:27:09,920 - ERROR - Clustering pipeline failed: perform_clustering() missing 1 required positional argument: 'X_scaled'
 2026-01-16 17:27:09,920 - INFO - >>> Pipeline Finished Successfully. <<<
+2026-01-16 18:28:37,473 - INFO - START: Filling missing values for 'All_NaN' using Median.
+2026-01-16 18:28:37,487 - ERROR - Integrity Check Failed: Calculation Error: Median for 'All_NaN' is NaN (Column might be entirely empty).
+2026-01-16 18:28:37,576 - INFO - START: Filling missing values for 'Price' using Median.
+2026-01-16 18:28:37,583 - INFO - Action: Filled 2 missing values with median (200.00).
+2026-01-16 18:28:37,583 - INFO - SUCCESS: Column 'Price' processing complete.
+2026-01-16 18:28:37,583 - INFO - START: Filling missing values for 'Price' using Median.
+2026-01-16 18:28:37,590 - INFO - START: Filling missing values for 'Ram' using Median.
+2026-01-16 18:28:37,590 - INFO - No Action: Column 'Ram' has no missing values.
+2026-01-16 18:28:37,590 - INFO - SUCCESS: Column 'Ram' processing complete.
+2026-01-16 18:28:37,595 - INFO - START: Filling missing values for 'Screen_Size' using Median.
+2026-01-16 18:28:37,597 - ERROR - Input Error: "Column 'Screen_Size' does not exist in the DataFrame."
+2026-01-16 18:28:37,604 - INFO - START: Filling missing values for 'Company' using Median.
+2026-01-16 18:28:37,604 - ERROR - Integrity Check Failed: Prerequisite Failed: Column 'Company' is of type object, but must be numeric.
+2026-01-16 18:28:38,228 - INFO - START: Attempting to remove columns: []
+2026-01-16 18:28:38,228 - WARNING - No columns provided to remove (empty list).
+2026-01-16 18:28:38,244 - INFO - START: Attempting to remove columns: Not a list
+2026-01-16 18:28:38,245 - ERROR - Usage Error: Input 'columns_to_remove' must be a list, got <class 'str'>.
+2026-01-16 18:28:38,258 - INFO - START: Attempting to remove columns: ['Price']
+2026-01-16 18:28:38,258 - ERROR - Usage Error: Input 'df' must be a pandas DataFrame.
+2026-01-16 18:28:38,263 - INFO - START: Attempting to remove columns: ['laptop_ID', 'Company']
+2026-01-16 18:28:38,275 - INFO - Successfully dropped columns: ['laptop_ID', 'Company']
+2026-01-16 18:28:38,280 - INFO - START: Attempting to remove columns: ['Screen', 'Ram']
+2026-01-16 18:28:38,280 - WARNING - Note: The following columns were not found and could not be dropped: ['Screen']
+2026-01-16 18:28:38,283 - INFO - Successfully dropped columns: ['Ram']
+2026-01-16 18:28:38,292 - INFO - START: Attempting to remove columns: ['price']
+2026-01-16 18:28:38,292 - WARNING - Note: The following columns were not found and could not be dropped: ['price']
+2026-01-16 18:28:38,292 - INFO - Column 'price' not found. Maybe you mean 'Price'
+2026-01-16 18:30:45,683 - INFO - START: Filling missing values for 'All_NaN' using Median.
+2026-01-16 18:30:45,697 - ERROR - Integrity Check Failed: Calculation Error: Median for 'All_NaN' is NaN (Column might be entirely empty).
+2026-01-16 18:30:45,717 - INFO - START: Filling missing values for 'Price' using Median.
+2026-01-16 18:30:45,721 - INFO - Action: Filled 2 missing values with median (200.00).
+2026-01-16 18:30:45,721 - INFO - SUCCESS: Column 'Price' processing complete.
+2026-01-16 18:30:45,730 - INFO - START: Filling missing values for 'Price' using Median.
+2026-01-16 18:30:45,735 - INFO - START: Filling missing values for 'Ram' using Median.
+2026-01-16 18:30:45,736 - INFO - No Action: Column 'Ram' has no missing values.
+2026-01-16 18:30:45,736 - INFO - SUCCESS: Column 'Ram' processing complete.
+2026-01-16 18:30:45,738 - INFO - START: Filling missing values for 'Screen_Size' using Median.
+2026-01-16 18:30:45,741 - ERROR - Input Error: "Column 'Screen_Size' does not exist in the DataFrame."
+2026-01-16 18:30:45,756 - INFO - START: Filling missing values for 'Company' using Median.
+2026-01-16 18:30:45,757 - ERROR - Integrity Check Failed: Prerequisite Failed: Column 'Company' is of type object, but must be numeric.
+2026-01-16 18:30:46,237 - INFO - START: Attempting to remove columns: []
+2026-01-16 18:30:46,237 - WARNING - No columns provided to remove (empty list).
+2026-01-16 18:30:46,254 - INFO - START: Attempting to remove columns: Not a list
+2026-01-16 18:30:46,255 - ERROR - Usage Error: Input 'columns_to_remove' must be a list, got <class 'str'>.
+2026-01-16 18:30:46,265 - INFO - START: Attempting to remove columns: ['Price']
+2026-01-16 18:30:46,265 - ERROR - Usage Error: Input 'df' must be a pandas DataFrame.
+2026-01-16 18:30:46,268 - INFO - START: Attempting to remove columns: ['laptop_ID', 'Company']
+2026-01-16 18:30:46,268 - INFO - Successfully dropped columns: ['laptop_ID', 'Company']
+2026-01-16 18:30:46,282 - INFO - START: Attempting to remove columns: ['Screen', 'Ram']
+2026-01-16 18:30:46,282 - WARNING - Note: The following columns were not found and could not be dropped: ['Screen']
+2026-01-16 18:30:46,284 - INFO - Successfully dropped columns: ['Ram']
+2026-01-16 18:30:46,284 - INFO - START: Attempting to remove columns: ['price']
+2026-01-16 18:30:46,284 - WARNING - Note: The following columns were not found and could not be dropped: ['price']
+2026-01-16 18:30:46,284 - INFO - Column 'price' not found. Maybe you mean 'Price'
+2026-01-16 18:32:27,770 - INFO - START: Filling missing values for 'All_NaN' using Median.
+2026-01-16 18:32:27,770 - ERROR - Integrity Check Failed: Calculation Error: Median for 'All_NaN' is NaN (Column might be entirely empty).
+2026-01-16 18:32:27,778 - INFO - START: Filling missing values for 'Price' using Median.
+2026-01-16 18:32:27,778 - INFO - Action: Filled 2 missing values with median (200.00).
+2026-01-16 18:32:27,780 - INFO - SUCCESS: Column 'Price' processing complete.
+2026-01-16 18:32:27,782 - INFO - START: Filling missing values for 'Price' using Median.
+2026-01-16 18:32:27,792 - INFO - START: Filling missing values for 'Ram' using Median.
+2026-01-16 18:32:27,796 - INFO - No Action: Column 'Ram' has no missing values.
+2026-01-16 18:32:27,796 - INFO - SUCCESS: Column 'Ram' processing complete.
+2026-01-16 18:32:27,812 - INFO - START: Filling missing values for 'Screen_Size' using Median.
+2026-01-16 18:32:27,812 - ERROR - Input Error: "Column 'Screen_Size' does not exist in the DataFrame."
+2026-01-16 18:32:27,819 - INFO - START: Filling missing values for 'Company' using Median.
+2026-01-16 18:32:27,825 - ERROR - Integrity Check Failed: Prerequisite Failed: Column 'Company' is of type object, but must be numeric.
+2026-01-16 18:32:28,183 - INFO - START: Attempting to remove columns: []
+2026-01-16 18:32:28,183 - WARNING - No columns provided to remove (empty list).
+2026-01-16 18:32:28,189 - INFO - START: Attempting to remove columns: Not a list
+2026-01-16 18:32:28,189 - ERROR - Usage Error: Input 'columns_to_remove' must be a list, got <class 'str'>.
+2026-01-16 18:32:28,191 - INFO - START: Attempting to remove columns: ['Price']
+2026-01-16 18:32:28,195 - ERROR - Usage Error: Input 'df' must be a pandas DataFrame.
+2026-01-16 18:32:28,202 - INFO - START: Attempting to remove columns: ['laptop_ID', 'Company']
+2026-01-16 18:32:28,206 - INFO - Successfully dropped columns: ['laptop_ID', 'Company']
+2026-01-16 18:32:28,210 - INFO - START: Attempting to remove columns: ['Screen', 'Ram']
+2026-01-16 18:32:28,210 - WARNING - Note: The following columns were not found and could not be dropped: ['Screen']
+2026-01-16 18:32:28,216 - INFO - Successfully dropped columns: ['Ram']
+2026-01-16 18:32:28,223 - INFO - START: Attempting to remove columns: ['price']
+2026-01-16 18:32:28,223 - WARNING - Note: The following columns were not found and could not be dropped: ['price']
+2026-01-16 18:32:28,223 - INFO - Column 'price' not found. Maybe you mean 'Price'

@@ -1,3 +1,4 @@
+'''
 import unittest
 import pandas as pd
 import numpy as np
@@ -101,3 +102,91 @@ class TestRemoveColumns(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+'''
+
+import sys
+import os
+import unittest
+import pandas as pd
+import numpy as np
+
+# --- Path Configuration (הוספנו את זה כדי שהטסט ימצא את הקוד) ---
+current_test_dir = os.path.dirname(os.path.abspath(__file__))
+project_root_dir = os.path.dirname(current_test_dir)
+sys.path.insert(0, project_root_dir)
+# -------------------------------------------------------------
+
+# Import the function
+try:
+    from src.data_cleaning import remove_columns
+except ImportError:
+    try:
+        from src.data_cleaning import remove_columns
+    except ImportError as e:
+        raise ImportError(f"Could not import 'remove_columns'. Check 'src' folder. Error: {e}")
+
+class TestRemoveColumns(unittest.TestCase):
+
+    def setUp(self):
+        """
+        Setup function to create a clean DataFrame before each test.
+        """
+        self.data = {
+            'laptop_ID': [1, 2, 3],
+            'Company': ['Apple', 'HP', 'Dell'],
+            'Price': [1000, 500, 700],
+            'Ram': [8, 16, 32]
+        }
+        self.df = pd.DataFrame(self.data)
+
+    # --- Positive Test Case ---
+    def test_remove_existing_columns(self):
+        columns_to_remove = ['laptop_ID', 'Company']
+        
+        # Action
+        df_new = remove_columns(self.df.copy(), columns_to_remove)
+        
+        # Assertions
+        self.assertNotIn('laptop_ID', df_new.columns)
+        self.assertNotIn('Company', df_new.columns)
+        self.assertIn('Price', df_new.columns)
+        self.assertEqual(df_new.shape[1], 2)
+
+    # --- Negative Test Case ---
+    def test_remove_non_existent_column(self):
+        # 'Ram' exists, 'Screen' does not
+        columns_to_remove = ['Screen', 'Ram']
+        
+        df_new = remove_columns(self.df.copy(), columns_to_remove)
+        
+        # 'Ram' should be removed
+        self.assertNotIn('Ram', df_new.columns)
+        self.assertIn('Price', df_new.columns)
+        self.assertEqual(df_new.shape[1], 3)
+
+    # --- Edge Test Case ---
+    def test_empty_removal_list(self):
+        columns_to_remove = []
+        df_new = remove_columns(self.df.copy(), columns_to_remove)
+        pd.testing.assert_frame_equal(self.df, df_new)
+
+    # --- Error Test Case ---
+    def test_invalid_input_type_columns(self):
+        result = remove_columns(self.df.copy(), "Not a list")
+        pd.testing.assert_frame_equal(self.df, result)
+
+    def test_invalid_input_type_df(self):
+        not_a_df = "I am a string"
+        result = remove_columns(not_a_df, ['Price'])
+        self.assertEqual(result, not_a_df)
+
+    # --- Logical/Safety Test ---
+    def test_typo_protection(self):
+        columns_to_remove = ['price'] # Typo: Lowercase 'p'
+        df_new = remove_columns(self.df.copy(), columns_to_remove)
+        
+        # The original 'Price' column must still exist (case sensitive)
+        self.assertIn('Price', df_new.columns)
+
+if __name__ == '__main__':
+    unittest.main()    

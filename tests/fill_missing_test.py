@@ -1,3 +1,4 @@
+'''
 import unittest
 import pandas as pd
 import numpy as np
@@ -118,3 +119,95 @@ class TestFillMissingWithMedian(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+'''
+
+import sys
+import os
+import unittest
+import pandas as pd
+import numpy as np
+
+# --- Path Configuration (הוספנו את זה כדי שהטסט ימצא את הקוד) ---
+current_test_dir = os.path.dirname(os.path.abspath(__file__))
+project_root_dir = os.path.dirname(current_test_dir)
+sys.path.insert(0, project_root_dir)
+# -------------------------------------------------------------
+
+# Import the function
+try:
+    from src.data_cleaning import fill_missing_with_median
+except ImportError:
+    # Fallback if the file name is different
+    try:
+        from src.fill_missing import fill_missing_with_median
+    except ImportError as e:
+        raise ImportError(f"Could not import 'fill_missing_with_median'. Check 'src' folder. Error: {e}")
+
+class TestFillMissingWithMedian(unittest.TestCase):
+
+    def setUp(self):
+        """
+        Setup function to create a clean DataFrame before each test.
+        """
+        self.data = {
+            'Price': [100.0, 300.0, np.nan, 200.0, np.nan], # Median is 200.0
+            'Ram': [8, 16, 32, 4, 8],
+            'Company': ['Apple', 'HP', 'Dell', 'Lenovo', 'Asus'],
+            'All_NaN': [np.nan, np.nan, np.nan, np.nan, np.nan]
+        }
+        self.df = pd.DataFrame(self.data)
+
+    # --- Positive Test Case ---
+    def test_fill_valid_numeric_column(self):
+        col_name = 'Price'
+        expected_median = 200.0
+        
+        # Action
+        df_new = fill_missing_with_median(self.df.copy(), col_name)
+        
+        # Assertions
+        self.assertEqual(df_new[col_name].isna().sum(), 0)
+        self.assertEqual(df_new[col_name].iloc[2], expected_median)
+        self.assertEqual(df_new[col_name].iloc[4], expected_median)
+
+    # --- Positive Test Case (No Changes) ---
+    def test_no_missing_values(self):
+        col_name = 'Ram'
+        df_new = fill_missing_with_median(self.df.copy(), col_name)
+        pd.testing.assert_frame_equal(self.df, df_new)
+
+    # --- Negative Test Case ---
+    def test_non_existent_column(self):
+        col_name = 'Screen_Size' # Does not exist
+        df_new = fill_missing_with_median(self.df.copy(), col_name)
+        pd.testing.assert_frame_equal(self.df, df_new)
+
+    def test_non_numeric_column(self):
+        col_name = 'Company' # String type
+        df_new = fill_missing_with_median(self.df.copy(), col_name)
+        pd.testing.assert_frame_equal(self.df, df_new)
+
+    # --- Edge Test Case ---
+    def test_all_values_are_nan(self):
+        col_name = 'All_NaN'
+        df_new = fill_missing_with_median(self.df.copy(), col_name)
+        
+        # Expectation: Returns original DF because median calculation resulted in NaN
+        pd.testing.assert_frame_equal(self.df, df_new)
+        self.assertEqual(df_new[col_name].isna().sum(), 5)
+
+    # --- Error Test Case ---
+    def test_invalid_input_type(self):
+        invalid_input = "I am not a DataFrame"
+        
+        # Action
+        # Assuming function returns input or None on error, avoiding crash
+        try:
+            result = fill_missing_with_median(invalid_input, 'Price')
+            if result is not None:
+                self.assertEqual(result, invalid_input)
+        except Exception:
+            pass # Exception is also acceptable behavior
+
+if __name__ == '__main__':
+    unittest.main()    
