@@ -62,7 +62,7 @@ def plot_stacked_distribution(df, group_col='risk_group', target_col='stroke'):
 def plot_mosaic_overview(df, group_col='risk_group', target_col='stroke'):
     """
     2. Mosaic Plot: Visualizes group sizes (width) AND stroke rates (height).
-    Updated: Percentages INSIDE the boxes, Black borders, FORCED ROTATION.
+    Updated: X-axis labels now include the sample size (n).
     """
     logger.info("Generating Mosaic Plot...")
 
@@ -70,12 +70,26 @@ def plot_mosaic_overview(df, group_col='risk_group', target_col='stroke'):
         if df is None or df.empty:
             logger.warning("DataFrame is empty. Skipping Mosaic Plot.")
             return
+
+        # --- 1. Prepare Labels with Counts (NEW) ---
+        # Calculate how many people are in each group
+        counts = df[group_col].value_counts()
+
+        # Helper function to add (n=...) to the label
+        def make_label(k):
+            if k in counts:
+                return f"{k}\n(n={counts[k]})"
+            return k
+
+        # Create a copy and update the column with the new labels
+        plot_df = df.copy()
+        plot_df[group_col] = plot_df[group_col].apply(make_label)
         
-        # 1. Initialize Figure and Axes explicitly
+        # --- 2. Initialize Figure and Axes explicitly ---
         fig, ax = plt.subplots(figsize=(12, 7)) 
         
-        # 2. Prepare Data
-        cross_props = pd.crosstab(df[group_col], df[target_col], normalize='index') * 100
+        # --- 3. Prepare Data (Using plot_df to match new labels) ---
+        cross_props = pd.crosstab(plot_df[group_col], plot_df[target_col], normalize='index') * 100
         label_map = {}
         for group in cross_props.index:
             if 0 in cross_props.columns:
@@ -93,8 +107,9 @@ def plot_mosaic_overview(df, group_col='risk_group', target_col='stroke'):
             k = (str(key[0]), str(key[1]))
             return label_map.get(k, "") 
         
-        # 3. Generate Plot (Pass 'ax' explicitly)
-        mosaic(df, [group_col, target_col], properties=props, gap=0.007, 
+        # --- 4. Generate Plot (Pass 'ax' explicitly) ---
+        # Note: Using plot_df here!
+        mosaic(plot_df, [group_col, target_col], properties=props, gap=0.007, 
                title='Mosaic Plot: Sample Size vs Outcome', labelizer=labelizer, ax=ax)
         
         for text in ax.texts:
@@ -104,11 +119,11 @@ def plot_mosaic_overview(df, group_col='risk_group', target_col='stroke'):
         ax.set_xlabel('Risk Group (Width = Sample Size)', fontsize=13)
         ax.set_ylabel('Outcome (Height = Proportion)', fontsize=13)
         
-        # --- THE NUCLEAR FIX: Force Rotation using a Loop ---
+        # --- Force Formatting using a Loop ---
         for label in ax.get_xticklabels():
-            label.set_rotation(45)
-            label.set_horizontalalignment('right')
-            label.set_fontsize(12)      
+            label.set_rotation(0) # Changed to 0 (horizontal) for better readability
+            label.set_horizontalalignment('center')
+            label.set_fontsize(11)      
             label.set_fontweight('bold')
         
         # Legend
@@ -218,79 +233,9 @@ def plot_rr_lollipop(results_df):
         logger.error(f"Lollipop Plot Error: {e}")
 
 # ==========================================================
-# PART 3: SCENARIO SPECIFIC VISUALIZATIONS WITHOUT OUTLIERS
+# PART 3: SCENARIO SPECIFIC VISUALIZATION WITHOUT OUTLIERS
 # ==========================================================
 
-def plot_rr_forest(results_df):
-    """
-    4. Forest Plot: Shows RR with Confidence Intervals.
-    FORCE ORDER: BMI (Bottom) -> Glucose -> Both High (Top)
-    """
-    logger.info("Generating Forest Plot...")
-    
-    if results_df is None or results_df.empty:
-        logger.warning("Results DataFrame is empty. Skipping Forest Plot.")
-        return
-
-    # --- Step 1: Force Order by Manual Reconstruction ---
-    # Identify the column name (checks if it is 'Risk Factor' or 'comparison')
-    col_name = 'Risk Factor' if 'Risk Factor' in results_df.columns else 'comparison'
-    
-    # We reconstruct the table row-by-row to guarantee the order
-    # 1. Extract the BMI row
-    row_bmi = results_df[results_df[col_name].str.contains("BMI", case=False, na=False)]
-    
-    # 2. Extract the Glucose row
-    row_glucose = results_df[results_df[col_name].str.contains("Glucose", case=False, na=False)]
-    
-    # 3. Extract the 'Both' row
-    row_both = results_df[results_df[col_name].str.contains("Both", case=False, na=False)]
-    
-    # Recombine them in this exact order: BMI first (index 0 -> Bottom), Both last (index 2 -> Top)
-    plot_data = pd.concat([row_bmi, row_glucose, row_both], ignore_index=True)
-
-    # --- Step 2: Plotting ---
-    plt.figure(figsize=(10, 6))
-    
-    for i, row in plot_data.iterrows():
-        # Significance Check
-        is_significant = (row['CI_Lower'] > 1) or (row['CI_Upper'] < 1)
-        color = '#d62828' if is_significant else 'black'
-        
-        # The Key Trick: Plot at position 'i' (0, 1, 2) based on our forced order
-        plt.errorbar(x=row['RR'], y=i, 
-                     xerr=[[row['RR']-row['CI_Lower']], [row['CI_Upper']-row['RR']]], 
-                     fmt='o', color=color, ecolor=color, capsize=5, markersize=8)
-        
-        # Text Label above the point
-        label_text = f"RR={row['RR']:.2f}\n({row['CI_Lower']:.2f}-{row['CI_Upper']:.2f})"
-        plt.text(row['RR'], i + 0.15, label_text, va='bottom', ha='center', 
-                 fontsize=9, fontweight='bold', color='darkblue')
-
-    # Reference Line at 1
-    plt.axvline(x=1, color='gray', linestyle='--', alpha=0.7, label='No Effect')
-    
-    # Set Y Ticks to the names in our manually sorted table
-    plt.yticks(range(len(plot_data)), plot_data[col_name], fontsize=11, fontweight='bold')
-    
-    # Adjust limits for better spacing
-    plt.ylim(-0.5, len(plot_data) - 0.5 + 0.5)
-
-    # Custom Legend (Matching the Lollipop style)
-    custom_lines = [
-        Line2D([0], [0], color='#d62828', marker='o', linestyle='', markersize=8),
-        Line2D([0], [0], color='black', marker='o', linestyle='', markersize=8)
-    ]
-    plt.legend(custom_lines, ['Significant', 'Not Significant'], loc='lower right', title="Significance")
-
-    plt.title('Relative Risk Forest Plot', fontsize=14, fontweight='bold')
-    plt.xlabel('Relative Risk (RR)', fontsize=12)
-    plt.grid(axis='x', linestyle=':', alpha=0.6)
-    
-    plt.tight_layout()
-    plt.savefig("4_forest_plot.png")
-    plt.close()
-    logger.info("Saved: 4_forest_plot.png")
 
 def plot_results_table(results_df, title):
     """
@@ -303,14 +248,12 @@ def plot_results_table(results_df, title):
         return
 
     # 1. Select and Rename Columns for cleaner display
-    display_df = results_df[['comparison', 'RR', 'CI_Lower', 'CI_Upper', 'P_Value', 'Significant_0.05']].copy()
-    display_df.columns = ['Group', 'RR', 'Lower CI', 'Upper CI', 'P-Value', 'Significant_0.05']
+    display_df = results_df[['comparison', 'RR', 'P_Value', 'Significant_0.05', 'Outliers_Removed']].copy()
+    display_df.columns = ['Group', 'RR', 'P Value', 'Significant_0.05', 'Outliers Removed']
     
     # Round numbers for better visuals
     display_df['RR'] = display_df['RR'].round(2)
-    display_df['Lower CI'] = display_df['Lower CI'].round(2)
-    display_df['Upper CI'] = display_df['Upper CI'].round(2)
-    display_df['P-Value'] = display_df['P-Value'].round(4)
+    display_df['P Value'] = display_df['P Value'].round(4)
 
     # 2. Create Figure
     fig, ax = plt.subplots(figsize=(12, 3)) # Short height for a table
@@ -362,7 +305,6 @@ def plot_all_visualizations(df, results_df):
     plot_residuals_heatmap(df)
     
     if results_df is not None and not results_df.empty:
-        plot_rr_forest(results_df)
         plot_rr_lollipop(results_df)
     else:
         logger.warning("No results_df provided. Skipping RR plots.")
