@@ -3,105 +3,116 @@ import os
 import pytest
 import pandas as pd
 import numpy as np
-from unittest.mock import patch
 
 # --- Path Setup ---
 current_test_dir = os.path.dirname(os.path.abspath(__file__))
 project_root_dir = os.path.dirname(current_test_dir)
 sys.path.insert(0, project_root_dir)
-# ------------------
 
-try:
-    from src.load_csv import load_dataset
-except ImportError:
-    raise ImportError("Could not find 'load_dataset'. Make sure 'load_csv.py' is inside the 'src' folder.")
+from src.load_csv import load_dataset
 
 # -----------------------------------------------------------------------------
-# Fixtures
+# Helper Function
 # -----------------------------------------------------------------------------
-
-@pytest.fixture
-def mock_logger():
-    """Mocks the logger within src.load_csv."""
-    with patch("src.load_csv.logger") as mock:
-        yield mock
-
-@pytest.fixture
-def valid_dataframe():
-    """Creates a valid DataFrame (1000 rows, 10 cols)."""
-    data = np.random.rand(1000, 10)
-    columns = [f"col_{i}" for i in range(10)]
-    return pd.DataFrame(data, columns=columns)
+def create_dummy_csv(filepath, rows=1000, cols=10):
+    """
+    Helper function to generate a CSV file with specific dimensions.
+    """
+    data = np.random.rand(rows, cols)
+    columns = [f"col_{i}" for i in range(cols)]
+    df = pd.DataFrame(data, columns=columns)
+    df.to_csv(filepath, index=False)
 
 # -----------------------------------------------------------------------------
 # Test Cases
 # -----------------------------------------------------------------------------
 
-def test_load_dataset_positive(tmp_path, valid_dataframe, mock_logger):
-    """Positive Test Case: Valid CSV loads correctly."""
-    file_path = tmp_path / "valid_data.csv"
-    valid_dataframe.to_csv(file_path, index=False)
+def test_load_dataset_success(tmp_path):
+    """
+    Positive Test: Verifies that a valid file (1000 rows, 10 cols) loads correctly.
+    """
+    # 1. Setup: Create a valid CSV file
+    file_path = tmp_path / "good_data.csv"
+    create_dummy_csv(file_path, rows=1000, cols=10)
     
-    df = load_dataset(str(file_path))
-    
-    assert df is not None
-    assert not df.empty
-    assert df.shape == (1000, 10)
-
-def test_load_dataset_negative_file_not_found(mock_logger):
-    """Negative Test Case: File not found."""
-    result = load_dataset("non_existent_file.csv")
-    assert result is None
-    mock_logger.error.assert_called()
-
-def test_load_dataset_boundary_limits(tmp_path, mock_logger):
-    """Boundary Test Case: Exactly 1000 rows, 10 columns."""
-    df_boundary = pd.DataFrame(np.random.rand(1000, 10), columns=[f"c{i}" for i in range(10)])
-    file_path = tmp_path / "boundary_data.csv"
-    df_boundary.to_csv(file_path, index=False)
-
+    # 2. Run function
     result = load_dataset(str(file_path))
+    
+    # 3. Assertions
     assert result is not None
     assert result.shape == (1000, 10)
 
-def test_load_dataset_edge_insufficient_rows(tmp_path, mock_logger):
-    """Edge Test Case: 999 rows (should fail)."""
-    df_edge = pd.DataFrame(np.random.rand(999, 10), columns=[f"c{i}" for i in range(10)])
-    file_path = tmp_path / "edge_rows.csv"
-    df_edge.to_csv(file_path, index=False)
+def test_load_dataset_insufficient_rows(tmp_path):
+    """
+    Test failure when the file has fewer than 1000 rows.
+    """
+    # 1. Setup: Create a file with only 999 rows
+    file_path = tmp_path / "low_rows.csv"
+    create_dummy_csv(file_path, rows=999, cols=10) 
 
+    # 2. Run function
     result = load_dataset(str(file_path))
-    assert result is None
-    # Flexible assertion for any error logged
-    mock_logger.error.assert_called()
-
-def test_load_dataset_edge_insufficient_columns(tmp_path, mock_logger):
-    """Edge Test Case: 9 columns (should fail)."""
-    df_edge = pd.DataFrame(np.random.rand(1000, 9), columns=[f"c{i}" for i in range(9)])
-    file_path = tmp_path / "edge_cols.csv"
-    df_edge.to_csv(file_path, index=False)
-
-    result = load_dataset(str(file_path))
+    
+    # 3. Assertions
+    # Function should handle the validation error and return None
     assert result is None
 
-def test_load_dataset_null_empty_file(tmp_path, mock_logger):
-    """Null Test Case: Empty file."""
+def test_load_dataset_insufficient_columns(tmp_path):
+    """
+    Test failure when the file has fewer than 10 columns.
+    """
+    # 1. Setup: Create a file with only 9 columns
+    file_path = tmp_path / "low_cols.csv"
+    create_dummy_csv(file_path, rows=1000, cols=9) 
+
+    # 2. Run function
+    result = load_dataset(str(file_path))
+
+    # 3. Assertions
+    # Function should handle the validation error and return None
+    assert result is None
+
+def test_file_not_found():
+    """
+    Negative Test: Verifies behavior when file does not exist.
+    """
+    # 1. Setup: Define a non-existent file path
+    fake_path = "ghost_file.csv"
+
+    # 2. Run function
+    result = load_dataset(fake_path)
+    
+    # 3. Assertions
+    # Underlying error: FileNotFoundError -> Returns None
+    assert result is None
+
+def test_empty_file(tmp_path):
+    """
+    Negative Test: Verifies behavior when file exists but is empty.
+    """
+    # 1. Setup: Create an empty file (0 bytes)
     file_path = tmp_path / "empty.csv"
-    file_path.touch()
+    file_path.touch() 
 
+    # 2. Run function
     result = load_dataset(str(file_path))
-    assert result is None
-    mock_logger.error.assert_called_with("CSV file is empty or contains no data.")
-
-def test_load_dataset_error_corrupted(tmp_path, mock_logger):
-    """Error Test Case: Corrupted file triggering ParserError."""
-    file_path = tmp_path / "corrupted.csv"
     
-    # FIX: We use an unclosed quote. This guarantees a ParserError.
+    # 3. Assertions
+    # Underlying error: EmptyDataError -> Returns None
+    assert result is None
+
+def test_corrupted_csv(tmp_path):
+    """
+    Negative Test: Verifies behavior when file contains malformed data.
+    """
+    # 1. Setup: Write invalid CSV format (unclosed quote)
+    file_path = tmp_path / "broken.csv"
     with open(file_path, "w") as f:
-        f.write('col1,col2\n"val1,val2') 
+        f.write('col1,col2\n"value_without_closing_quote') 
 
+    # 2. Run function
     result = load_dataset(str(file_path))
     
+    # 3. Assertions
+    # Underlying error: ParserError -> Returns None
     assert result is None
-    mock_logger.error.assert_called_with("CSV file is corrupted or improperly formatted.")

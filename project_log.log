@@ -12234,3 +12234,173 @@ Group B  55.82             197.34  31.84          0.22           0.14    0.11   
 2026-01-16 18:32:28,223 - INFO - START: Attempting to remove columns: ['price']
 2026-01-16 18:32:28,223 - WARNING - Note: The following columns were not found and could not be dropped: ['price']
 2026-01-16 18:32:28,223 - INFO - Column 'price' not found. Maybe you mean 'Price'
+2026-01-17 12:18:01,187 - INFO - Attempting to load dataset from C:\Users\einav\AppData\Local\Temp\pytest-of-einav\pytest-5\test_load_dataset_success0\good_data.csv
+2026-01-17 12:18:01,217 - INFO - Dataset loaded successfully. Shape: (1000, 10)
+2026-01-17 12:18:01,233 - INFO - Attempting to load dataset from C:\Users\einav\AppData\Local\Temp\pytest-of-einav\pytest-5\test_load_dataset_insufficient0\low_rows.csv
+2026-01-17 12:18:01,260 - ERROR - Data integrity check failed: Dataset must contain at least 1000 rows to meet the project requirements.
+2026-01-17 12:18:01,279 - INFO - Attempting to load dataset from C:\Users\einav\AppData\Local\Temp\pytest-of-einav\pytest-5\test_load_dataset_insufficient1\low_cols.csv
+2026-01-17 12:18:01,331 - ERROR - Data integrity check failed: Dataset must contain at least 10 columns to meet the project requirements.
+2026-01-17 12:18:01,334 - ERROR - File error: File not found: ghost_file.csv
+2026-01-17 12:18:01,339 - INFO - Attempting to load dataset from C:\Users\einav\AppData\Local\Temp\pytest-of-einav\pytest-5\test_empty_file0\empty.csv
+2026-01-17 12:18:01,340 - ERROR - CSV file is empty or contains no data.
+2026-01-17 12:18:01,353 - INFO - Attempting to load dataset from C:\Users\einav\AppData\Local\Temp\pytest-of-einav\pytest-5\test_corrupted_csv0\broken.csv
+2026-01-17 12:18:01,383 - ERROR - CSV file is corrupted or improperly formatted.
+2026-01-17 12:48:05,762 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-17 12:48:05,778 - INFO - Successfully created 'risk_group' column.
+2026-01-17 13:02:50,082 - INFO - >>> Starting the Stroke Analysis Pipeline... <<<
+2026-01-17 13:02:50,084 - INFO - Attempting to load dataset from stroke_df/healthcare-dataset-stroke-data.csv
+2026-01-17 13:02:50,157 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-17 13:02:50,158 - INFO - --- Phase 1: Data Cleaning ---
+2026-01-17 13:02:50,158 - INFO - START: Attempting to remove columns: ['id']
+2026-01-17 13:02:50,180 - INFO - Successfully dropped columns: ['id']
+2026-01-17 13:02:50,181 - INFO - START: processing column 'bmi'.
+2026-01-17 13:02:50,182 - INFO - SUCCESS: Column 'bmi' converted. 0 invalid values set to NaN.
+2026-01-17 13:02:50,183 - INFO - START: processing column 'avg_glucose_level'.
+2026-01-17 13:02:50,185 - INFO - SUCCESS: Column 'avg_glucose_level' converted. 0 invalid values set to NaN.
+2026-01-17 13:02:50,186 - INFO - START: processing column 'age'.
+2026-01-17 13:02:50,188 - INFO - SUCCESS: Column 'age' converted. 0 invalid values set to NaN.
+2026-01-17 13:02:50,190 - INFO - START: Filling missing values for 'bmi' using Median.
+2026-01-17 13:02:50,198 - INFO - Action: Filled 201 missing values with median (28.10).
+2026-01-17 13:02:50,198 - INFO - SUCCESS: Column 'bmi' processing complete.
+2026-01-17 13:02:50,199 - INFO - --- Phase 2: Generating Multi-Scenario Reports ---
+2026-01-17 13:02:50,199 - INFO - --- Processing Scenario: 1. Without BMI Outliers ---
+2026-01-17 13:02:50,200 - INFO - Starting outlier removal for 'bmi' (Threshold: 1.5)
+2026-01-17 13:02:50,203 - INFO - IQR Bounds calculated for 'bmi': [10.30, 46.30]
+2026-01-17 13:02:50,204 - INFO - Stats: Removing 126 outliers (2.47% of data).
+2026-01-17 13:02:50,214 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-17 13:02:50,222 - INFO - Successfully created 'risk_group' column.
+2026-01-17 13:02:50,240 - INFO - Composite Variable Created. Group Distribution: {'bmi_only': 88, 'both_high': 37, 'neither': 1}
+2026-01-17 13:02:50,241 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-17 13:02:50,416 - INFO - Successfully created 'risk_group' column.
+2026-01-17 13:02:50,420 - INFO - Composite Variable Created. Group Distribution: {'neither': 2796, 'bmi_only': 1404, 'glucose_only': 393, 'both_high': 391}
+2026-01-17 13:02:50,421 - INFO - Running full analysis pipeline...
+2026-01-17 13:02:50,421 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-17 13:02:50,431 - INFO - Analysis Done. RR=3.112, p=0.0000
+2026-01-17 13:02:50,431 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-17 13:02:50,436 - INFO - Analysis Done. RR=0.8851, p=0.4730
+2026-01-17 13:02:50,437 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-17 13:02:50,444 - INFO - Analysis Done. RR=2.8326, p=0.0000
+2026-01-17 13:02:50,447 - INFO - ==================================================
+2026-01-17 13:02:50,447 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-17 13:02:50,448 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-17 13:02:50,448 - INFO - Risk Factor (RR): 3.112 (CI: 2.2468-4.3102)
+2026-01-17 13:02:50,448 - INFO - ==================================================
+2026-01-17 13:02:50,449 - INFO - Generating Results Table for: 1. Without BMI Outliers
+2026-01-17 13:02:52,332 - INFO - Saved: table_1._Without_BMI_Outliers.png
+2026-01-17 13:02:52,334 - INFO - --- Processing Scenario: 2. Without Glucose Outliers ---
+2026-01-17 13:02:52,336 - INFO - Starting outlier removal for 'avg_glucose_level' (Threshold: 1.5)
+2026-01-17 13:02:52,337 - INFO - IQR Bounds calculated for 'avg_glucose_level': [21.98, 169.36]
+2026-01-17 13:02:52,338 - INFO - Stats: Removing 627 outliers (12.27% of data).
+2026-01-17 13:02:52,339 - WARNING - High outlier count! Removing >10% of data from 'avg_glucose_level'. Check threshold.
+2026-01-17 13:02:52,342 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-17 13:02:52,347 - INFO - Successfully created 'risk_group' column.
+2026-01-17 13:02:52,349 - INFO - Composite Variable Created. Group Distribution: {'both_high': 357, 'glucose_only': 270}
+2026-01-17 13:02:52,350 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-17 13:02:52,396 - INFO - Successfully created 'risk_group' column.
+2026-01-17 13:02:52,400 - INFO - Composite Variable Created. Group Distribution: {'neither': 2797, 'bmi_only': 1492, 'glucose_only': 123, 'both_high': 71}
+2026-01-17 13:02:52,400 - INFO - Running full analysis pipeline...
+2026-01-17 13:02:52,401 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-17 13:02:52,405 - INFO - Analysis Done. RR=1.0943, p=0.8752
+2026-01-17 13:02:52,405 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-17 13:02:52,416 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-17 13:02:52,418 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-17 13:02:52,423 - INFO - Analysis Done. RR=1.2633, p=0.5688
+2026-01-17 13:02:52,429 - INFO - ==================================================
+2026-01-17 13:02:52,431 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-17 13:02:52,432 - INFO - The group with the HIGHEST Relative Risk is: 'glucose_only vs neither'
+2026-01-17 13:02:52,432 - INFO - Risk Factor (RR): 1.2633 (CI: 0.5665-2.8173)
+2026-01-17 13:02:52,433 - INFO - ==================================================
+2026-01-17 13:02:52,434 - INFO - Generating Results Table for: 2. Without Glucose Outliers
+2026-01-17 13:02:52,813 - INFO - Saved: table_2._Without_Glucose_Outliers.png
+2026-01-17 13:02:52,816 - INFO - --- Processing Scenario: 3. Without Any Outliers ---
+2026-01-17 13:02:52,818 - INFO - Starting outlier removal for 'bmi' (Threshold: 1.5)
+2026-01-17 13:02:52,828 - INFO - IQR Bounds calculated for 'bmi': [10.30, 46.30]
+2026-01-17 13:02:52,835 - INFO - Stats: Removing 126 outliers (2.47% of data).
+2026-01-17 13:02:52,842 - INFO - Starting outlier removal for 'avg_glucose_level' (Threshold: 1.5)
+2026-01-17 13:02:52,849 - INFO - IQR Bounds calculated for 'avg_glucose_level': [22.36, 168.59]
+2026-01-17 13:02:52,851 - INFO - Stats: Removing 594 outliers (11.92% of data).
+2026-01-17 13:02:52,852 - WARNING - High outlier count! Removing >10% of data from 'avg_glucose_level'. Check threshold.
+2026-01-17 13:02:52,858 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-17 13:02:52,871 - INFO - Successfully created 'risk_group' column.
+2026-01-17 13:02:52,877 - INFO - Composite Variable Created. Group Distribution: {'both_high': 360, 'glucose_only': 271, 'bmi_only': 88, 'neither': 1}
+2026-01-17 13:02:52,882 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-17 13:02:52,968 - INFO - Successfully created 'risk_group' column.
+2026-01-17 13:02:52,977 - INFO - Composite Variable Created. Group Distribution: {'neither': 2796, 'bmi_only': 1404, 'glucose_only': 122, 'both_high': 68}
+2026-01-17 13:02:52,979 - INFO - Running full analysis pipeline...
+2026-01-17 13:02:52,979 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-17 13:02:52,983 - INFO - Analysis Done. RR=1.1422, p=0.8167
+2026-01-17 13:02:52,984 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-17 13:02:52,991 - INFO - Analysis Done. RR=0.8851, p=0.4730
+2026-01-17 13:02:52,993 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-17 13:02:53,013 - INFO - Analysis Done. RR=1.2732, p=0.5559
+2026-01-17 13:02:53,022 - INFO - ==================================================
+2026-01-17 13:02:53,030 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-17 13:02:53,034 - INFO - The group with the HIGHEST Relative Risk is: 'glucose_only vs neither'
+2026-01-17 13:02:53,034 - INFO - Risk Factor (RR): 1.2732 (CI: 0.571-2.8389)
+2026-01-17 13:02:53,035 - INFO - ==================================================
+2026-01-17 13:02:53,037 - INFO - Generating Results Table for: 3. Without Any Outliers
+2026-01-17 13:02:53,371 - INFO - Saved: table_3._Without_Any_Outliers.png
+2026-01-17 13:02:53,372 - INFO - --- Phase 3: Feature Engineering ---
+2026-01-17 13:02:53,373 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-17 13:02:53,418 - INFO - Successfully created 'risk_group' column.
+2026-01-17 13:02:53,421 - INFO - Composite Variable Created. Group Distribution: {'neither': 2797, 'bmi_only': 1492, 'both_high': 428, 'glucose_only': 393}
+2026-01-17 13:02:53,422 - INFO - --- Phase 4: Statistical Analysis ---
+2026-01-17 13:02:53,422 - INFO - --- Starting Chi-Square Test: risk_group vs stroke ---
+2026-01-17 13:02:53,462 - INFO - Contingency table created successfully. Shape: (4, 2)
+2026-01-17 13:02:53,465 - INFO - Test Finished. P-value: 0.00000 | Result: Significant (Reject H0)
+2026-01-17 13:02:53,465 - INFO - Running full analysis pipeline...
+2026-01-17 13:02:53,465 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-17 13:02:53,469 - INFO - Analysis Done. RR=3.0255, p=0.0000
+2026-01-17 13:02:53,469 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-17 13:02:53,477 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-17 13:02:53,478 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-17 13:02:53,501 - INFO - Analysis Done. RR=2.8336, p=0.0000
+2026-01-17 13:02:53,512 - INFO - ==================================================
+2026-01-17 13:02:53,514 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-17 13:02:53,514 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-17 13:02:53,515 - INFO - Risk Factor (RR): 3.0255 (CI: 2.1981-4.1642)
+2026-01-17 13:02:53,515 - INFO - ==================================================
+2026-01-17 13:02:53,554 - INFO - Generating visualizations...
+2026-01-17 13:02:53,556 - INFO - Running full analysis pipeline...
+2026-01-17 13:02:53,556 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-17 13:02:53,568 - INFO - Analysis Done. RR=3.0255, p=0.0000
+2026-01-17 13:02:53,568 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-17 13:02:53,574 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-17 13:02:53,575 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-17 13:02:53,589 - INFO - Analysis Done. RR=2.8336, p=0.0000
+2026-01-17 13:02:53,599 - INFO - ==================================================
+2026-01-17 13:02:53,600 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-17 13:02:53,600 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-17 13:02:53,601 - INFO - Risk Factor (RR): 3.0255 (CI: 2.1981-4.1642)
+2026-01-17 13:02:53,602 - INFO - ==================================================
+2026-01-17 13:02:53,602 - INFO - --- Starting Visualization Pipeline ---
+2026-01-17 13:02:53,604 - INFO - Generating Stacked Bar Chart
+2026-01-17 13:02:54,090 - INFO - Saved: 1_stacked_bar.png
+2026-01-17 13:02:54,090 - INFO - Generating Mosaic Plot...
+2026-01-17 13:02:54,430 - INFO - Saved: 2_mosaic_plot.png
+2026-01-17 13:02:54,430 - INFO - Generating Residuals Heatmap...
+2026-01-17 13:02:54,696 - INFO - Saved: 3_residuals_heatmap.png
+2026-01-17 13:02:54,697 - INFO - Generating Lollipop Plot...
+2026-01-17 13:02:54,944 - INFO - Saved: 5_lollipop_plot.png
+2026-01-17 13:02:54,945 - INFO - --- Visualization Pipeline Completed ---
+2026-01-17 13:02:54,945 - INFO - All visualizations have been successfully saved to the project folder.
+2026-01-17 13:02:54,946 - INFO - --- Phase 5: Cluster Analysis ---
+2026-01-17 13:02:54,946 - INFO - START: Attempting to remove columns: ['stroke']
+2026-01-17 13:02:54,948 - INFO - Successfully dropped columns: ['stroke']
+2026-01-17 13:02:54,948 - INFO - START: Searching for optimal K (range: 1 to 10).
+2026-01-17 13:03:12,817 - INFO - Saved: elbow_method_k.png
+2026-01-17 13:03:12,818 - INFO - Optimization complete. Best K: 2
+2026-01-17 13:03:12,820 - ERROR - Clustering pipeline failed: perform_clustering() missing 1 required positional argument: 'X_scaled'
+2026-01-17 13:03:12,820 - INFO - >>> Pipeline Finished Successfully. <<<
+2026-01-17 14:30:29,037 - INFO - Composite Variable Created. Group Distribution: {'neither': 1, 'bmi_only': 1, 'glucose_only': 1, 'both_high': 1}
+2026-01-17 14:30:29,049 - ERROR - CRITICAL ERROR in create_composite_variable: Column 'bmi_high' contains invalid values (must be 0 or 1).
+2026-01-17 14:40:54,534 - INFO - START: processing column 'salary'.
+2026-01-17 14:40:54,544 - INFO - SUCCESS: Column 'salary' converted. 1 invalid values set to NaN.
+2026-01-17 14:40:54,577 - INFO - START: processing column 'salary'.
+2026-01-17 14:40:54,579 - ERROR - Integrity Check Failed: Safety Stop: Conversion resulted in 75.0% data loss. Threshold is 50.0%.
+2026-01-17 14:40:54,588 - INFO - START: processing column 'salary'.
+2026-01-17 14:40:54,591 - INFO - SUCCESS: Column 'salary' converted. 3 invalid values set to NaN.
+2026-01-17 14:40:54,612 - INFO - START: processing column 'ghost_column'.
+2026-01-17 14:40:54,612 - ERROR - Input Error: "Column 'ghost_column' does not exist in the DataFrame."
+2026-01-17 14:40:54,632 - INFO - START: processing column 'age'.
+2026-01-17 14:40:54,635 - INFO - SUCCESS: Column 'age' converted. 0 invalid values set to NaN.

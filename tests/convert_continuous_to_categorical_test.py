@@ -1,8 +1,18 @@
+import sys
+import os
 import pytest
 import pandas as pd
+
+# --- Path Setup (Crucial for importing from src) ---
+# This block ensures Python can find the 'src' directory
+current_test_dir = os.path.dirname(os.path.abspath(__file__))
+project_root_dir = os.path.dirname(current_test_dir)
+sys.path.insert(0, project_root_dir)
+
+# Import after setting up the path
 from src.transformers import convert_continuous_to_categorical
 
-def convert_continuous_to_categorical_test():
+def test_convert_continuous_to_categorical():
     """
     Test convert_continuous_to_categorical covering all scenarios.
     Assumed Thresholds: BMI >= 30, Glucose >= 140.
@@ -30,9 +40,9 @@ def convert_continuous_to_categorical_test():
 def test_convert_missing_columns():
     """
     Test failure when required columns are missing.
-    Checks for a general Exception.
+    Checks for a general Exception using pytest.raises.
     """
     df_bad = pd.DataFrame({'bmi': [22]})
     
-    # We expect ANY exception
+    # We expect ANY exception (Logic preserved as requested)
     pytest.raises(Exception, convert_continuous_to_categorical, df_bad)
