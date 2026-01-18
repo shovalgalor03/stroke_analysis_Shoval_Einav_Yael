@@ -15457,3 +15457,53 @@ Group B  55.82             197.34  31.84          0.22           0.14    0.11   
 2026-01-18 21:06:27,337 - ERROR - Failed to plot styled table: name 'filename' is not defined
 2026-01-18 21:06:27,337 - INFO - SUCCESS: Clustering section complete with 7 clusters.
 2026-01-18 21:06:27,338 - INFO - >>> Pipeline Finished Successfully. <<<
+2026-01-18 21:29:48,508 - INFO - Starting analysis: Comparing 'GroupA' vs 'GroupB'
+2026-01-18 21:29:48,559 - INFO - Analysis Done. RR=inf, p=0.2482
+2026-01-18 21:29:48,572 - INFO - Starting analysis: Comparing 'GroupA' vs 'GroupZ'
+2026-01-18 21:29:48,574 - WARNING - Control group 'GroupZ' not found. Skipping.
+2026-01-18 21:29:48,584 - INFO - Starting analysis: Comparing 'A' vs 'B'
+2026-01-18 21:29:48,585 - ERROR - CRITICAL ERROR in analysis for A: Outcome column 'heart_attack' not found.
+2026-01-18 21:29:48,593 - INFO - Starting analysis: Comparing 'A' vs 'B'
+2026-01-18 21:29:48,600 - ERROR - CRITICAL ERROR in analysis for A: Outcome column 'stroke' must be numeric (0/1).
+2026-01-18 21:29:48,619 - INFO - Starting analysis: Comparing 'A' vs 'B'
+2026-01-18 21:29:48,621 - ERROR - CRITICAL ERROR in analysis for A: Input 'df' must be a pandas DataFrame, got <class 'list'>
+2026-01-18 21:35:16,264 - INFO - Running full analysis pipeline...
+2026-01-18 21:35:16,265 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-18 21:35:16,281 - INFO - Analysis Done. RR=inf, p=0.0455
+2026-01-18 21:35:16,282 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-18 21:35:16,290 - INFO - Analysis Done. RR=inf, p=0.2482
+2026-01-18 21:35:16,292 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-18 21:35:16,300 - INFO - Analysis Done. RR=inf, p=0.2482
+2026-01-18 21:35:16,307 - INFO - ==================================================
+2026-01-18 21:35:16,308 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-18 21:35:16,309 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-18 21:35:16,309 - INFO - Risk Factor (RR): inf (CI: inf-inf)
+2026-01-18 21:35:16,309 - INFO - ==================================================
+2026-01-18 21:35:16,316 - INFO - Running full analysis pipeline...
+2026-01-18 21:35:16,317 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-18 21:35:16,324 - INFO - Analysis Done. RR=inf, p=0.2482
+2026-01-18 21:35:16,325 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-18 21:35:16,326 - WARNING - Exposed group 'bmi_only' not found. Skipping.
+2026-01-18 21:35:16,326 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-18 21:35:16,328 - WARNING - Exposed group 'glucose_only' not found. Skipping.
+2026-01-18 21:35:16,330 - INFO - ==================================================
+2026-01-18 21:35:16,330 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-18 21:35:16,331 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-18 21:35:16,331 - INFO - Risk Factor (RR): inf (CI: inf-inf)
+2026-01-18 21:35:16,331 - INFO - ==================================================
+2026-01-18 21:35:16,337 - INFO - Running full analysis pipeline...
+2026-01-18 21:35:16,338 - ERROR - Dataframe is empty or None. Cannot run pipeline.
+2026-01-18 21:35:16,341 - INFO - Running full analysis pipeline...
+2026-01-18 21:35:16,343 - ERROR - Dataframe is empty or None. Cannot run pipeline.
+2026-01-18 21:42:44,536 - INFO - START: Filling missing values for 'age' using Median.
+2026-01-18 21:42:44,552 - INFO - Action: Filled 1 missing values with median (20.00).
+2026-01-18 21:42:44,554 - INFO - SUCCESS: Column 'age' processing complete.
+2026-01-18 21:42:44,564 - INFO - START: Filling missing values for 'age' using Median.
+2026-01-18 21:42:44,567 - INFO - No Action: Column 'age' has no missing values.
+2026-01-18 21:42:44,570 - INFO - SUCCESS: Column 'age' processing complete.
+2026-01-18 21:42:44,576 - INFO - START: Filling missing values for 'name' using Median.
+2026-01-18 21:42:44,576 - ERROR - Integrity Check Failed: Prerequisite Failed: Column 'name' is of type object, but must be numeric.
+2026-01-18 21:42:44,581 - INFO - START: Filling missing values for 'age' using Median.
+2026-01-18 21:42:44,582 - ERROR - Integrity Check Failed: Calculation Error: Median for 'age' is NaN (Column might be entirely empty).
+2026-01-18 21:42:44,771 - INFO - START: Filling missing values for 'height' using Median.
+2026-01-18 21:42:44,771 - ERROR - Input Error: "Column 'height' does not exist in the DataFrame."
