@@ -25,7 +25,7 @@ from src.visualizations import plot_all_visualizations
 from src.cluster_analysis import find_optimal_k,perform_clustering, plot_clusters_pca, plot_risk_analysis, get_cluster_profiles, plot_cluster_profile_table, plot_stroke_capture_rate, prepare_data, calculate_cluster_risks
 
 # H. Scenario Manager (NEW)
-from src.outliers_scenarios import run_scenario
+from src.glucose_outliers_scenario import run_scenario
 
 # Initialize Logger
 logger = setup_logger("Main_Runner")
@@ -63,14 +63,11 @@ def main():
     except NameError:
         logger.warning("fill_missing_with_median not found. Skipping (Clustering might fail).")
 
-    # --- Step 3: Generate Outlier Scenarios (Tables & Plots) ---
-    # Run Multi-Scenario Reports
-    logger.info("--- Phase 2: Generating Multi-Scenario Reports ---")
-    run_scenario(df, remove_bmi=True, remove_glucose=False, scenario_title="1. Without BMI Outliers")
-    run_scenario(df, remove_bmi=False, remove_glucose=True, scenario_title="2. Without Glucose Outliers")
-    run_scenario(df, remove_bmi=True, remove_glucose=True, scenario_title="3. Without Any Outliers")
+    # --- Step 3: Generate Outlier Scenario (Table) ---
+    # Run Scenario Reports
+    logger.info("--- Phase 2: Generating Scenario Report ---")
+    run_scenario(df, remove_bmi=False, remove_glucose=True, scenario_title="Without Glucose Outliers")
    
-
     # --- Step 4: Feature Engineering
     logger.info("--- Phase 3: Feature Engineering ---")
     df = convert_continuous_to_categorical(df) # Create Flags (bmi_high, glucose_high) 
