@@ -69,7 +69,7 @@ def calculate_relative_risk(df, exposed_group, control_group, outcome_col='strok
     logger.info(f"Starting analysis: Comparing '{exposed_group}' vs '{control_group}'")
 
     try:
-        # --- SAFETY CHECK 3: Type Checking ---
+        # --- SAFETY CHECK: Type Checking ---
         if not isinstance(df, pd.DataFrame):
             raise TypeError(f"Input 'df' must be a pandas DataFrame, got {type(df)}")
 
@@ -89,8 +89,7 @@ def calculate_relative_risk(df, exposed_group, control_group, outcome_col='strok
             return None
 
         # --- 2. Filter Data ---
-        # Use .copy() to avoid SettingWithCopyWarning
-        subset = df[df[group_col].isin([exposed_group, control_group])].copy()
+        subset = df[df[group_col].isin([exposed_group, control_group])].copy() # Use copy to avoid SettingWithCopyWarning
         
         # Ensure outcome column is numeric (0/1) to prevent summation errors
         if not pd.api.types.is_numeric_dtype(subset[outcome_col]):
@@ -98,18 +97,17 @@ def calculate_relative_risk(df, exposed_group, control_group, outcome_col='strok
 
         # Count cases in Exposed Group
         exp_df = subset[subset[group_col] == exposed_group]
-        exposed_sick = int(exp_df[outcome_col].sum())       # Cast to int for safety
+        exposed_sick = int(exp_df[outcome_col].sum()) # Cast to int for safety
         exposed_healthy = len(exp_df) - exposed_sick
 
         # Count cases in Control Group
         ctrl_df = subset[subset[group_col] == control_group]
-        control_sick = int(ctrl_df[outcome_col].sum())      # Cast to int for safety
+        control_sick = int(ctrl_df[outcome_col].sum()) # Cast to int for safety
         control_healthy = len(ctrl_df) - control_sick
 
         # --- 3. Send to calculation (Helper function) ---
         rr, ci_lower, ci_upper, p_val = calculate_statistics(
-            exposed_sick, exposed_healthy, control_sick, control_healthy
-        )
+            exposed_sick, exposed_healthy, control_sick, control_healthy)
 
         # If NaN returned (e.g., due to empty groups), stop here
         if np.isnan(rr):
@@ -133,8 +131,7 @@ def calculate_relative_risk(df, exposed_group, control_group, outcome_col='strok
 
     except Exception as e:
         logger.error(f"CRITICAL ERROR in analysis for {exposed_group}: {str(e)}")
-        # Return None instead of crashing, allowing the pipeline to continue
-        return None
+        return None  # Return None instead of crashing, allowing the pipeline to continue
 
 
 def run_full_analysis_pipeline(df):
