@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from src.logger import setup_logger
 
 # A. Loading
@@ -21,7 +22,7 @@ from src.relative_risk_analysis import run_full_analysis_pipeline
 from src.visualizations import plot_all_visualizations
 
 # G. Clustering
-from src.cluster_analysis import find_optimal_k,perform_clustering, plot_clusters_pca, plot_risk_analysis, get_cluster_profiles, plot_cluster_profile_table, plot_stroke_capture_rate, prepare_data
+from src.cluster_analysis import find_optimal_k,perform_clustering, plot_clusters_pca, plot_risk_analysis, get_cluster_profiles, plot_cluster_profile_table, plot_stroke_capture_rate, prepare_data, calculate_cluster_risks
 
 # H. Scenario Manager (NEW)
 from src.outliers_scenarios import run_scenario
@@ -105,35 +106,48 @@ def main():
 
     # --- Step 7: Cluster Analysis (Extra)
     logger.info("--- Phase 5: Cluster Analysis ---")
+    
+    output_dir = "clustering_outputs"
+    os.makedirs(output_dir, exist_ok=True)
 
-    try:
-        df_blind = remove_columns(df, columns_to_remove=['stroke']) # removing the target variable ('id' column already removed)
-        X_scaled = prepare_data(df_blind)
-        
-        optimal_k = find_optimal_k(X_scaled) # Automatically find the mathematically optimal number of clusters
-        df_clustered = perform_clustering(df_blind, X_scaled, n_clusters=optimal_k) # Execute clustering algorithm using the discovered K
+    # Configuration for the two requested runs
+    scenarios = [
+        {"cols": ['stroke'], "name": "with_glucose"},
+        {"cols": ['stroke', 'avg_glucose_level'], "name": "no_glucose"}]
 
-        df_clustered['stroke'] = df['stroke'] # Re-attach 'stroke' diagnosis to validate the clusters
+    for sc in scenarios:
+        suffix = sc["name"]
+        logger.info(f"Processing clustering for: {suffix}")
+        
+        try:
+            df_blind = remove_columns(df, columns_to_remove=sc["cols"]) # removing the target variable ('id' column already removed)
+            X_scaled = prepare_data(df_blind)
+            
+            optimal_k = find_optimal_k(X_scaled, 
+                                       save_path=os.path.join(output_dir, f"optimal_k_{suffix}.png")) # Automatically find the mathematically optimal number of clusters
+            df_clustered = perform_clustering(df_blind, X_scaled, n_clusters=optimal_k) # Execute clustering algorithm using the discovered K
 
-        plot_clusters_pca(X_scaled, df_clustered['cluster']) # Visualize the patient segments in 2D space (PCA)
-                
-        profile_data = get_cluster_profiles(df_clustered) 
-        plot_cluster_profile_table(profile_data, filename="cluster_profile_table.png")   
-             
-        # Calculate percentage of stroke cases per cluster
-        df_clustered['stroke'] = pd.to_numeric(df_clustered['stroke'], errors='coerce') # Ensure 'stroke' is numeric to avoid calculation errors
-        cluster_summary = df_clustered.groupby('cluster')['stroke'].mean().reset_index()
-        cluster_summary.columns = ['cluster', 'stroke_risk_%']
-        cluster_summary['stroke_risk_%'] *= 100
-        
-        # Visualization of cluster performance
-        plot_stroke_capture_rate(df_clustered)   
-        plot_risk_analysis(cluster_summary)
-        
-        logger.info(f"SUCCESS: Clustering section complete with {optimal_k} clusters.")
-   
-    except Exception as e:
-        logger.error(f"Clustering pipeline failed: {e}")
+            df_clustered['stroke'] = df['stroke'] # Re-attach 'stroke' diagnosis to validate the clusters
+
+            plot_clusters_pca(X_scaled, df_clustered['cluster'], 
+                            save_path=os.path.join(output_dir, f"pca_{suffix}.png")) 
+                        
+            # Calculate percentage of stroke cases per cluster
+            cluster_summary = calculate_cluster_risks(df_clustered)
+            plot_risk_analysis(cluster_summary,
+                            save_path=os.path.join(output_dir, f"risk_{suffix}.png")) 
+            
+            plot_stroke_capture_rate(df_clustered,
+                                    save_path=os.path.join(output_dir, f"capture_{suffix}.png"))
+            
+            profile_data = get_cluster_profiles(df_clustered) 
+            plot_cluster_profile_table(profile_data, 
+                                    save_path=os.path.join(output_dir, f"profile_{suffix}.png"))
+            
+            logger.info(f"SUCCESS: Clustering section complete with {optimal_k} clusters.")
+    
+        except Exception as e:
+            logger.error(f"Clustering pipeline failed: {e}")
 
     logger.info(">>> Pipeline Finished Successfully. <<<")
 
