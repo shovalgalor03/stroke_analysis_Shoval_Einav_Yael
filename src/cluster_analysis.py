@@ -221,7 +221,7 @@ def plot_cluster_profile_table(profile_df: pd.DataFrame, save_path):
     Renders a formatted vertical table as a high-quality PNG image.
     Fixed scaling and visibility issues.
     """
-    logger.info(f"Generating styled table image: {filename}")
+    logger.info(f"Generating styled table image: {save_path}")
 
     try:
         # 1. Adjust figure size based on the number of rows
