@@ -21,7 +21,7 @@ from src.relative_risk_analysis import run_full_analysis_pipeline
 from src.visualizations import plot_all_visualizations
 
 # G. Clustering
-from src.cluster_analysis import find_optimal_k,perform_clustering, plot_clusters_pca, plot_risk_analysis, get_cluster_profiles, plot_cluster_profile_table, plot_stroke_capture_rate
+from src.cluster_analysis import find_optimal_k,perform_clustering, plot_clusters_pca, plot_risk_analysis, get_cluster_profiles, plot_cluster_profile_table, plot_stroke_capture_rate, prepare_data
 
 # H. Scenario Manager (NEW)
 from src.outliers_scenarios import run_scenario
@@ -107,14 +107,16 @@ def main():
     logger.info("--- Phase 5: Cluster Analysis ---")
 
     try:
-        df_blind = remove_columns(df, columns_to_remove=['stroke']) # removing the target variable and non-relevant column
-        optimal_k = find_optimal_k(df_blind) # Automatically find the mathematically optimal number of clusters
-        df_clustered = perform_clustering(df_blind, n_clusters=optimal_k) # Execute clustering algorithm using the discovered K
+        df_blind = remove_columns(df, columns_to_remove=['stroke']) # removing the target variable ('id' column already removed)
+        X_scaled = prepare_data(df_blind)
+        
+        optimal_k = find_optimal_k(X_scaled) # Automatically find the mathematically optimal number of clusters
+        df_clustered = perform_clustering(df_blind, X_scaled, n_clusters=optimal_k) # Execute clustering algorithm using the discovered K
 
-        plot_clusters_pca(df_clustered) # Visualize the patient segments in 2D space (PCA)
-        
         df_clustered['stroke'] = df['stroke'] # Re-attach 'stroke' diagnosis to validate the clusters
-        
+
+        plot_clusters_pca(X_scaled, df_clustered['cluster']) # Visualize the patient segments in 2D space (PCA)
+                
         profile_data = get_cluster_profiles(df_clustered) 
         plot_cluster_profile_table(profile_data, filename="cluster_profile_table.png")   
              

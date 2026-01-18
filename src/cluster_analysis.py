@@ -26,7 +26,7 @@ def prepare_data(df: pd.DataFrame) -> np.ndarray:
     return X_scaled
 
 # --- Function 1: Find Optimal K (Elbow Method) ---
-def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
+def find_optimal_k(X_scaled: np.ndarray, max_k: int = 10) -> int:
     """
     Plots the Elbow Method (Inertia) to determine the optimal number of clusters.
     Cleaned version for professional academic presentation.
@@ -34,9 +34,6 @@ def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
     logger.info(f"START: Searching for optimal K (range: 1 to {max_k}).")
 
     try:
-        X_scaled = prepare_data(df)
-
-        # 3. Calculation Loop
         inertia = []
         silhouette_scores = []
         k_range = range(1, max_k + 1)
@@ -51,7 +48,7 @@ def find_optimal_k(df: pd.DataFrame, max_k: int = 10) -> int:
             else:
                 silhouette_scores.append(-1) # Placeholder for k=1, silhouette score requires at least 2 clusters
         
-        # 4. Determine best K    
+        # Determine best K    
         best_k_index = np.argmax(silhouette_scores)
         best_k = k_range[best_k_index]
         best_inertia = inertia[best_k_index]
@@ -102,17 +99,15 @@ def perform_clustering(df: pd.DataFrame, X_scaled: np.ndarray, n_clusters: int =
 
     try:
         assert n_clusters >= 2, f"Input Error: n_clusters must be at least 2, got {n_clusters}."
-
-        X_scaled = prepare_data(df)
         
-        # 3. Running Model
+        # Running Model
         kmeans = KMeans(n_clusters=n_clusters, random_state=1, n_init=10)
         clusters = kmeans.fit_predict(X_scaled)
         
-        # 4. Saving Results
+        # Saving Results
         df_clustered['cluster'] = clusters
 
-        # 5. Post-Validation
+        # Post-Validation
         assert 'cluster' in df_clustered.columns, "Verification Failed: 'cluster' column was not created."
         assert not df_clustered['cluster'].isna().any(), "Verification Failed: Null values found in 'cluster' column."
 
@@ -128,27 +123,26 @@ def perform_clustering(df: pd.DataFrame, X_scaled: np.ndarray, n_clusters: int =
         raise e
 
 # --- Function 3: Visualize with PCA (The "Map") ---
-def plot_clusters_pca(df_clustered: pd.DataFrame):
+def plot_clusters_pca(X_scaled: np.ndarray, cluster_labels: pd.Series):
     """
     Visualizes the clusters in 2D space using PCA.
     """
     logger.info("START: Generating PCA Visualization.")
 
     try:
-        # 1. Prepare data (Drop cluster column for PCA calculation)
-        feature_cols = df_clustered.drop(columns=['cluster'])
-        X_encoded = pd.get_dummies(feature_cols, drop_first=True)
-        
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X_encoded)
-
-        # 2. Apply PCA
+        # 1. Apply PCA
         pca = PCA(n_components=2)
         pca_components = pca.fit_transform(X_scaled)
-
+        
+        # 2. Log variance explanation for quality check
+        exp_var = pca.explained_variance_ratio_
+        logger.info(f"PC1 explains {exp_var[0]:.2%} of variance.")
+        logger.info(f"PC2 explains {exp_var[1]:.2%} of variance.")
+        logger.info(f"Total explained variance (2 components): {sum(exp_var):.2%}")
+        
         # 3. Create DataFrame for plotting
         pca_df = pd.DataFrame(data=pca_components, columns=['PC1', 'PC2'])
-        pca_df['Patient Group'] = df_clustered['cluster'].map({0: 'Group A', 1: 'Group B'})
+        pca_df['Patient Group'] = cluster_labels.map({0: 'Group A', 1: 'Group B'})
         
         # 4. Plot
         GROUP_COLORS = {'Group A': '#fc9272', 'Group B': '#de2d26'}   
