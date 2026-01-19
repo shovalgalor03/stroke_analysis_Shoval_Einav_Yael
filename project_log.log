@@ -16158,3 +16158,257 @@ Group B  55.82             197.34  31.84          0.22           0.14    0.11   
 2026-01-19 16:50:04,537 - ERROR - Failed to plot styled table: name 'filename' is not defined
 2026-01-19 16:50:04,537 - INFO - SUCCESS: Clustering section complete with 7 clusters.
 2026-01-19 16:50:04,539 - INFO - >>> Pipeline Finished Successfully. <<<
+2026-01-19 18:12:44,163 - INFO - >>> Starting the Stroke Analysis Pipeline... <<<
+2026-01-19 18:12:44,164 - INFO - Attempting to load dataset from stroke_df/healthcare-dataset-stroke-data.csv
+2026-01-19 18:12:44,276 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-19 18:12:44,280 - INFO - --- Phase 1: Data Cleaning ---
+2026-01-19 18:12:44,280 - INFO - START: Attempting to remove columns: ['id']
+2026-01-19 18:12:44,312 - INFO - Successfully dropped columns: ['id']
+2026-01-19 18:12:44,319 - INFO - START: processing column 'bmi'.
+2026-01-19 18:12:44,339 - INFO - SUCCESS: Column 'bmi' converted. 0 invalid values set to NaN.
+2026-01-19 18:12:44,341 - INFO - START: processing column 'avg_glucose_level'.
+2026-01-19 18:12:44,349 - INFO - SUCCESS: Column 'avg_glucose_level' converted. 0 invalid values set to NaN.
+2026-01-19 18:12:44,350 - INFO - START: processing column 'age'.
+2026-01-19 18:12:44,378 - INFO - SUCCESS: Column 'age' converted. 0 invalid values set to NaN.
+2026-01-19 18:12:44,378 - INFO - START: Filling missing values for 'bmi' using Median.
+2026-01-19 18:12:44,397 - INFO - Action: Filled 201 missing values with median (28.10).
+2026-01-19 18:12:44,403 - INFO - SUCCESS: Column 'bmi' processing complete.
+2026-01-19 18:12:44,404 - INFO - --- Phase 2: Generating Scenario Report ---
+2026-01-19 18:12:44,408 - INFO - --- Processing Scenario: Without Glucose Outliers ---
+2026-01-19 18:12:44,412 - INFO - Starting outlier removal for 'avg_glucose_level' (Threshold: 1.5)
+2026-01-19 18:12:44,426 - INFO - IQR Bounds calculated for 'avg_glucose_level': [21.98, 169.36]
+2026-01-19 18:12:44,430 - INFO - Stats: Removing 627 outliers (12.27% of data).
+2026-01-19 18:12:44,431 - WARNING - High outlier count! Removing >10% of data from 'avg_glucose_level'. Check threshold.
+2026-01-19 18:12:44,464 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-19 18:12:44,566 - INFO - Successfully created 'risk_group' column.
+2026-01-19 18:12:44,590 - INFO - Composite Variable Created. Group Distribution: {'both_high': 357, 'glucose_only': 270}
+2026-01-19 18:12:44,595 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-19 18:12:44,821 - INFO - Successfully created 'risk_group' column.
+2026-01-19 18:12:44,851 - INFO - Composite Variable Created. Group Distribution: {'neither': 2797, 'bmi_only': 1492, 'glucose_only': 123, 'both_high': 71}
+2026-01-19 18:12:44,852 - INFO - Running full analysis pipeline...
+2026-01-19 18:12:44,853 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-19 18:12:44,881 - INFO - Analysis Done. RR=1.0943, p=0.8752
+2026-01-19 18:12:44,882 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-19 18:12:44,902 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-19 18:12:44,903 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-19 18:12:44,921 - INFO - Analysis Done. RR=1.2633, p=0.5688
+2026-01-19 18:12:44,934 - INFO - ==================================================
+2026-01-19 18:12:44,935 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-19 18:12:44,936 - INFO - The group with the HIGHEST Relative Risk is: 'glucose_only vs neither'
+2026-01-19 18:12:44,936 - INFO - Risk Factor (RR): 1.2633 (CI: 0.5665-2.8173)
+2026-01-19 18:12:44,938 - INFO - ==================================================
+2026-01-19 18:12:44,941 - INFO - Generating Results Table for: Without Glucose Outliers
+2026-01-19 18:12:47,138 - INFO - Saved: table_Without_Glucose_Outliers.png
+2026-01-19 18:12:47,140 - INFO - --- Phase 3: Feature Engineering ---
+2026-01-19 18:12:47,141 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-19 18:12:47,292 - INFO - Successfully created 'risk_group' column.
+2026-01-19 18:12:47,307 - INFO - Composite Variable Created. Group Distribution: {'neither': 2797, 'bmi_only': 1492, 'both_high': 428, 'glucose_only': 393}
+2026-01-19 18:12:47,309 - INFO - --- Phase 4: Statistical Analysis ---
+2026-01-19 18:12:47,310 - INFO - --- Starting Chi-Square Test: risk_group vs stroke ---
+2026-01-19 18:12:47,352 - INFO - Contingency table created successfully. Shape: (4, 2)
+2026-01-19 18:12:47,357 - INFO - Test Finished. P-value: 0.00000 | Result: Significant (Reject H0)
+2026-01-19 18:12:47,359 - INFO - Running full analysis pipeline...
+2026-01-19 18:12:47,363 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-19 18:12:47,380 - INFO - Analysis Done. RR=3.0255, p=0.0000
+2026-01-19 18:12:47,383 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-19 18:12:47,411 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-19 18:12:47,414 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-19 18:12:47,441 - INFO - Analysis Done. RR=2.8336, p=0.0000
+2026-01-19 18:12:47,447 - INFO - ==================================================
+2026-01-19 18:12:47,448 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-19 18:12:47,449 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-19 18:12:47,450 - INFO - Risk Factor (RR): 3.0255 (CI: 2.1981-4.1642)
+2026-01-19 18:12:47,451 - INFO - ==================================================
+2026-01-19 18:12:47,497 - INFO - Generating visualizations...
+2026-01-19 18:12:47,499 - INFO - Running full analysis pipeline...
+2026-01-19 18:12:47,500 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-19 18:12:47,521 - INFO - Analysis Done. RR=3.0255, p=0.0000
+2026-01-19 18:12:47,522 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-19 18:12:47,548 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-19 18:12:47,549 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-19 18:12:47,574 - INFO - Analysis Done. RR=2.8336, p=0.0000
+2026-01-19 18:12:47,588 - INFO - ==================================================
+2026-01-19 18:12:47,591 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-19 18:12:47,593 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-19 18:12:47,597 - INFO - Risk Factor (RR): 3.0255 (CI: 2.1981-4.1642)
+2026-01-19 18:12:47,598 - INFO - ==================================================
+2026-01-19 18:12:47,600 - INFO - --- Starting Visualization Pipeline ---
+2026-01-19 18:12:47,601 - INFO - Generating Stacked Bar Chart
+2026-01-19 18:12:49,906 - INFO - Saved: 1_stacked_bar.png
+2026-01-19 18:12:49,907 - INFO - Generating Mosaic Plot...
+2026-01-19 18:12:51,924 - INFO - Saved: 2_mosaic_plot.png
+2026-01-19 18:12:51,926 - INFO - Generating Residuals Heatmap...
+2026-01-19 18:12:53,369 - INFO - Saved: 3_residuals_heatmap.png
+2026-01-19 18:12:53,371 - INFO - Generating Lollipop Plot...
+2026-01-19 18:12:54,582 - INFO - Saved: 5_lollipop_plot.png
+2026-01-19 18:12:54,582 - INFO - --- Visualization Pipeline Completed ---
+2026-01-19 18:12:54,583 - INFO - All visualizations have been successfully saved to the project folder.
+2026-01-19 18:12:54,586 - INFO - --- Phase 5: Cluster Analysis ---
+2026-01-19 18:12:54,591 - INFO - Processing clustering for: with_glucose
+2026-01-19 18:12:54,593 - INFO - START: Attempting to remove columns: ['stroke']
+2026-01-19 18:12:54,602 - INFO - Successfully dropped columns: ['stroke']
+2026-01-19 18:12:54,727 - INFO - START: Searching for optimal K (range: 1 to 10).
+2026-01-19 18:13:18,376 - INFO - Saved: elbow_method_k.png
+2026-01-19 18:13:18,377 - INFO - Optimization complete. Best K: 2
+2026-01-19 18:13:18,378 - INFO - START: Starting K-Means pipeline with 2 clusters.
+2026-01-19 18:13:18,609 - INFO - SUCCESS: Clustering pipeline complete.
+2026-01-19 18:13:18,611 - INFO - START: Generating PCA Visualization.
+2026-01-19 18:13:18,652 - INFO - PC1 explains 20.38% of variance.
+2026-01-19 18:13:18,653 - INFO - PC2 explains 11.13% of variance.
+2026-01-19 18:13:18,654 - INFO - Total explained variance (2 components): 31.52%
+2026-01-19 18:13:20,649 - INFO - START: Generating Risk Bar Chart.
+2026-01-19 18:13:21,990 - INFO - Saved: plot_risk_analysis.png
+2026-01-19 18:13:21,991 - INFO - START: Generating Capture Rate Pie Chart.
+2026-01-19 18:13:23,193 - INFO - Saved: plot_stroke_capture_rate.png
+2026-01-19 18:13:23,194 - INFO - Analyzing cluster characteristics...
+2026-01-19 18:13:23,285 - INFO - Generating styled table image: clustering_outputs\profile_with_glucose.png
+2026-01-19 18:13:24,931 - INFO - Table image saved successfully as: clustering_outputs\profile_with_glucose.png
+2026-01-19 18:13:24,932 - INFO - SUCCESS: Clustering section complete with 2 clusters.
+2026-01-19 18:13:24,933 - INFO - Processing clustering for: no_glucose
+2026-01-19 18:13:24,934 - INFO - START: Attempting to remove columns: ['stroke', 'avg_glucose_level']
+2026-01-19 18:13:24,942 - INFO - Successfully dropped columns: ['stroke', 'avg_glucose_level']
+2026-01-19 18:13:25,022 - INFO - START: Searching for optimal K (range: 1 to 10).
+2026-01-19 18:13:45,213 - INFO - Saved: elbow_method_k.png
+2026-01-19 18:13:45,215 - INFO - Optimization complete. Best K: 7
+2026-01-19 18:13:45,215 - INFO - START: Starting K-Means pipeline with 7 clusters.
+2026-01-19 18:13:45,464 - INFO - SUCCESS: Clustering pipeline complete.
+2026-01-19 18:13:45,469 - INFO - START: Generating PCA Visualization.
+2026-01-19 18:13:45,474 - INFO - PC1 explains 19.80% of variance.
+2026-01-19 18:13:45,480 - INFO - PC2 explains 9.47% of variance.
+2026-01-19 18:13:45,481 - INFO - Total explained variance (2 components): 29.27%
+2026-01-19 18:13:47,569 - INFO - START: Generating Risk Bar Chart.
+2026-01-19 18:13:49,246 - INFO - Saved: plot_risk_analysis.png
+2026-01-19 18:13:49,246 - INFO - START: Generating Capture Rate Pie Chart.
+2026-01-19 18:13:50,700 - INFO - Saved: plot_stroke_capture_rate.png
+2026-01-19 18:13:50,702 - INFO - Analyzing cluster characteristics...
+2026-01-19 18:13:50,838 - INFO - Generating styled table image: clustering_outputs\profile_no_glucose.png
+2026-01-19 18:13:53,482 - INFO - Table image saved successfully as: clustering_outputs\profile_no_glucose.png
+2026-01-19 18:13:53,483 - INFO - SUCCESS: Clustering section complete with 7 clusters.
+2026-01-19 18:13:53,483 - INFO - >>> Pipeline Finished Successfully. <<<
+2026-01-19 18:32:19,341 - INFO - >>> Starting the Stroke Analysis Pipeline... <<<
+2026-01-19 18:32:19,343 - INFO - Attempting to load dataset from stroke_df/healthcare-dataset-stroke-data.csv
+2026-01-19 18:32:19,366 - INFO - Dataset loaded successfully. Shape: (5110, 12)
+2026-01-19 18:32:19,368 - INFO - --- Phase 1: Data Cleaning ---
+2026-01-19 18:32:19,368 - INFO - START: Attempting to remove columns: ['id']
+2026-01-19 18:32:19,384 - INFO - Successfully dropped columns: ['id']
+2026-01-19 18:32:19,385 - INFO - START: processing column 'bmi'.
+2026-01-19 18:32:19,388 - INFO - SUCCESS: Column 'bmi' converted. 0 invalid values set to NaN.
+2026-01-19 18:32:19,389 - INFO - START: processing column 'avg_glucose_level'.
+2026-01-19 18:32:19,394 - INFO - SUCCESS: Column 'avg_glucose_level' converted. 0 invalid values set to NaN.
+2026-01-19 18:32:19,394 - INFO - START: processing column 'age'.
+2026-01-19 18:32:19,396 - INFO - SUCCESS: Column 'age' converted. 0 invalid values set to NaN.
+2026-01-19 18:32:19,397 - INFO - START: Filling missing values for 'bmi' using Median.
+2026-01-19 18:32:19,402 - INFO - Action: Filled 201 missing values with median (28.10).
+2026-01-19 18:32:19,402 - INFO - SUCCESS: Column 'bmi' processing complete.
+2026-01-19 18:32:19,403 - INFO - --- Phase 2: Generating Scenario Report ---
+2026-01-19 18:32:19,404 - INFO - --- Processing Scenario: Without Glucose Outliers ---
+2026-01-19 18:32:19,407 - INFO - Starting outlier removal for 'avg_glucose_level' (Threshold: 1.5)
+2026-01-19 18:32:19,413 - INFO - IQR Bounds calculated for 'avg_glucose_level': [21.98, 169.36]
+2026-01-19 18:32:19,417 - INFO - Stats: Removing 627 outliers (12.27% of data).
+2026-01-19 18:32:19,417 - WARNING - High outlier count! Removing >10% of data from 'avg_glucose_level'. Check threshold.
+2026-01-19 18:32:19,421 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-19 18:32:19,432 - INFO - Successfully created 'risk_group' column.
+2026-01-19 18:32:19,444 - INFO - Composite Variable Created. Group Distribution: {'both_high': 357, 'glucose_only': 270}
+2026-01-19 18:32:19,445 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-19 18:32:19,477 - INFO - Successfully created 'risk_group' column.
+2026-01-19 18:32:19,484 - INFO - Composite Variable Created. Group Distribution: {'neither': 2797, 'bmi_only': 1492, 'glucose_only': 123, 'both_high': 71}
+2026-01-19 18:32:19,486 - INFO - Running full analysis pipeline...
+2026-01-19 18:32:19,488 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-19 18:32:19,508 - INFO - Analysis Done. RR=1.0943, p=0.8752
+2026-01-19 18:32:19,509 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-19 18:32:19,514 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-19 18:32:19,514 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-19 18:32:19,521 - INFO - Analysis Done. RR=1.2633, p=0.5688
+2026-01-19 18:32:19,523 - INFO - ==================================================
+2026-01-19 18:32:19,523 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-19 18:32:19,523 - INFO - The group with the HIGHEST Relative Risk is: 'glucose_only vs neither'
+2026-01-19 18:32:19,524 - INFO - Risk Factor (RR): 1.2633 (CI: 0.5665-2.8173)
+2026-01-19 18:32:19,524 - INFO - ==================================================
+2026-01-19 18:32:19,525 - INFO - Generating Results Table for: Without Glucose Outliers
+2026-01-19 18:32:20,096 - INFO - Saved: table_Without_Glucose_Outliers.png
+2026-01-19 18:32:20,097 - INFO - --- Phase 3: Feature Engineering ---
+2026-01-19 18:32:20,098 - INFO - Starting conversion of continuous variables to binary flags...
+2026-01-19 18:32:20,126 - INFO - Successfully created 'risk_group' column.
+2026-01-19 18:32:20,130 - INFO - Composite Variable Created. Group Distribution: {'neither': 2797, 'bmi_only': 1492, 'both_high': 428, 'glucose_only': 393}
+2026-01-19 18:32:20,131 - INFO - --- Phase 4: Statistical Analysis ---
+2026-01-19 18:32:20,132 - INFO - --- Starting Chi-Square Test: risk_group vs stroke ---
+2026-01-19 18:32:20,158 - INFO - Contingency table created successfully. Shape: (4, 2)
+2026-01-19 18:32:20,159 - INFO - Test Finished. P-value: 0.00000 | Result: Significant (Reject H0)
+2026-01-19 18:32:20,160 - INFO - Running full analysis pipeline...
+2026-01-19 18:32:20,160 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-19 18:32:20,174 - INFO - Analysis Done. RR=3.0255, p=0.0000
+2026-01-19 18:32:20,176 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-19 18:32:20,192 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-19 18:32:20,193 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-19 18:32:20,207 - INFO - Analysis Done. RR=2.8336, p=0.0000
+2026-01-19 18:32:20,209 - INFO - ==================================================
+2026-01-19 18:32:20,210 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-19 18:32:20,210 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-19 18:32:20,210 - INFO - Risk Factor (RR): 3.0255 (CI: 2.1981-4.1642)
+2026-01-19 18:32:20,211 - INFO - ==================================================
+2026-01-19 18:32:20,243 - INFO - Generating visualizations...
+2026-01-19 18:32:20,243 - INFO - Running full analysis pipeline...
+2026-01-19 18:32:20,244 - INFO - Starting analysis: Comparing 'both_high' vs 'neither'
+2026-01-19 18:32:20,253 - INFO - Analysis Done. RR=3.0255, p=0.0000
+2026-01-19 18:32:20,254 - INFO - Starting analysis: Comparing 'bmi_only' vs 'neither'
+2026-01-19 18:32:20,258 - INFO - Analysis Done. RR=0.8332, p=0.2832
+2026-01-19 18:32:20,260 - INFO - Starting analysis: Comparing 'glucose_only' vs 'neither'
+2026-01-19 18:32:20,272 - INFO - Analysis Done. RR=2.8336, p=0.0000
+2026-01-19 18:32:20,274 - INFO - ==================================================
+2026-01-19 18:32:20,276 - INFO - SUMMARY - FINAL CONCLUSION:
+2026-01-19 18:32:20,276 - INFO - The group with the HIGHEST Relative Risk is: 'both_high vs neither'
+2026-01-19 18:32:20,277 - INFO - Risk Factor (RR): 3.0255 (CI: 2.1981-4.1642)
+2026-01-19 18:32:20,277 - INFO - ==================================================
+2026-01-19 18:32:20,277 - INFO - --- Starting Visualization Pipeline ---
+2026-01-19 18:32:20,277 - INFO - Generating Stacked Bar Chart
+2026-01-19 18:32:20,748 - INFO - Saved: 1_stacked_bar.png
+2026-01-19 18:32:20,749 - INFO - Generating Mosaic Plot...
+2026-01-19 18:32:21,043 - INFO - Saved: 2_mosaic_plot.png
+2026-01-19 18:32:21,043 - INFO - Generating Residuals Heatmap...
+2026-01-19 18:32:21,284 - INFO - Saved: 3_residuals_heatmap.png
+2026-01-19 18:32:21,284 - INFO - Generating Lollipop Plot...
+2026-01-19 18:32:21,482 - INFO - Saved: 5_lollipop_plot.png
+2026-01-19 18:32:21,482 - INFO - --- Visualization Pipeline Completed ---
+2026-01-19 18:32:21,482 - INFO - All visualizations have been successfully saved to the project folder.
+2026-01-19 18:32:21,482 - INFO - --- Phase 5: Cluster Analysis ---
+2026-01-19 18:32:21,483 - INFO - Processing clustering for: with_glucose
+2026-01-19 18:32:21,483 - INFO - START: Attempting to remove columns: ['stroke']
+2026-01-19 18:32:21,484 - INFO - Successfully dropped columns: ['stroke']
+2026-01-19 18:32:21,508 - INFO - START: Searching for optimal K (range: 1 to 10).
+2026-01-19 18:32:35,248 - INFO - Saved: elbow_method_k.png
+2026-01-19 18:32:35,251 - INFO - Optimization complete. Best K: 2
+2026-01-19 18:32:35,251 - INFO - START: Starting K-Means pipeline with 2 clusters.
+2026-01-19 18:32:35,492 - INFO - SUCCESS: Clustering pipeline complete.
+2026-01-19 18:32:35,494 - INFO - START: Generating PCA Visualization.
+2026-01-19 18:32:35,509 - INFO - PC1 explains 20.38% of variance.
+2026-01-19 18:32:35,509 - INFO - PC2 explains 11.13% of variance.
+2026-01-19 18:32:35,509 - INFO - Total explained variance (2 components): 31.52%
+2026-01-19 18:32:36,499 - INFO - START: Generating Risk Bar Chart.
+2026-01-19 18:32:37,156 - INFO - Saved: plot_risk_analysis.png
+2026-01-19 18:32:37,157 - INFO - START: Generating Capture Rate Pie Chart.
+2026-01-19 18:32:37,645 - INFO - Saved: plot_stroke_capture_rate.png
+2026-01-19 18:32:37,646 - INFO - Analyzing cluster characteristics...
+2026-01-19 18:32:37,674 - INFO - Generating styled table image: clustering_outputs\profile_with_glucose.png
+2026-01-19 18:32:38,653 - INFO - Table image saved successfully as: clustering_outputs\profile_with_glucose.png
+2026-01-19 18:32:38,653 - INFO - SUCCESS: Clustering section complete with 2 clusters.
+2026-01-19 18:32:38,654 - INFO - Processing clustering for: no_glucose
+2026-01-19 18:32:38,654 - INFO - START: Attempting to remove columns: ['stroke', 'avg_glucose_level']
+2026-01-19 18:32:38,659 - INFO - Successfully dropped columns: ['stroke', 'avg_glucose_level']
+2026-01-19 18:32:38,693 - INFO - START: Searching for optimal K (range: 1 to 10).
+2026-01-19 18:32:46,887 - INFO - Saved: elbow_method_k.png
+2026-01-19 18:32:46,888 - INFO - Optimization complete. Best K: 7
+2026-01-19 18:32:46,888 - INFO - START: Starting K-Means pipeline with 7 clusters.
+2026-01-19 18:32:46,980 - INFO - SUCCESS: Clustering pipeline complete.
+2026-01-19 18:32:46,981 - INFO - START: Generating PCA Visualization.
+2026-01-19 18:32:46,983 - INFO - PC1 explains 19.80% of variance.
+2026-01-19 18:32:46,983 - INFO - PC2 explains 9.47% of variance.
+2026-01-19 18:32:46,984 - INFO - Total explained variance (2 components): 29.27%
+2026-01-19 18:32:47,388 - INFO - START: Generating Risk Bar Chart.
+2026-01-19 18:32:47,680 - INFO - Saved: plot_risk_analysis.png
+2026-01-19 18:32:47,680 - INFO - START: Generating Capture Rate Pie Chart.
+2026-01-19 18:32:47,922 - INFO - Saved: plot_stroke_capture_rate.png
+2026-01-19 18:32:47,922 - INFO - Analyzing cluster characteristics...
+2026-01-19 18:32:47,952 - INFO - Generating styled table image: clustering_outputs\profile_no_glucose.png
+2026-01-19 18:32:48,409 - INFO - Table image saved successfully as: clustering_outputs\profile_no_glucose.png
+2026-01-19 18:32:48,409 - INFO - SUCCESS: Clustering section complete with 7 clusters.
+2026-01-19 18:32:48,410 - INFO - >>> Pipeline Finished Successfully. <<<
