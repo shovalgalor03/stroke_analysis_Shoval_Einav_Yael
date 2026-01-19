@@ -34,7 +34,7 @@ def find_optimal_k(X_scaled: np.ndarray, save_path: str, max_k: int = 10) -> int
     Cleaned version for professional academic presentation.
     """
     logger.info(f"START: Searching for optimal K (range: 1 to {max_k}).")
-    save_path = save_path
+    
     try:
         inertia = []
         silhouette_scores = []
@@ -42,11 +42,11 @@ def find_optimal_k(X_scaled: np.ndarray, save_path: str, max_k: int = 10) -> int
 
         for k in k_range:
             kmeans = KMeans(n_clusters=k, random_state=1, n_init=10) # Initialize the model with k clusters
-            labels = kmeans.fit_predict(X_scaled) # assign a cluster label to each patient
+            clusters = kmeans.fit_predict(X_scaled) # assign a cluster label to each patient
             inertia.append(kmeans.inertia_) # sum of squared distances within the group
             
             if k >= 2:
-                silhouette_scores.append(silhouette_score(X_scaled, labels)) # Separation between the groups
+                silhouette_scores.append(silhouette_score(X_scaled, clusters)) # Separation between the groups
             else:
                 silhouette_scores.append(-1) # Placeholder for k=1, silhouette score requires at least 2 clusters
         
@@ -55,7 +55,7 @@ def find_optimal_k(X_scaled: np.ndarray, save_path: str, max_k: int = 10) -> int
         best_k = k_range[best_k_index]
         best_inertia = inertia[best_k_index]
 
-        # 5. Plotting (Fixed Visualization)
+        #  Plotting (Fixed Visualization)
         plt.figure(figsize=(10, 8)) 
         plt.plot(k_range, inertia, marker='o', linestyle='-', color="#2669de", linewidth=2, markersize=8, 
                  label='Inertia Trend') # Plot the Elbow line in blue
