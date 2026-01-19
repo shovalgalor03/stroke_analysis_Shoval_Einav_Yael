@@ -213,9 +213,8 @@ def get_cluster_profiles(df_clustered: pd.DataFrame) -> pd.DataFrame:
     except Exception as e:
         logger.error(f"Failed to plot styled table: {e}")
      
-    # --- Function 5: Plot Styled Profile Table (FIXED) ---
 
-# --- Function 6:
+# --- Function 6: Plot Styled Profile Table (FIXED) ---
 def plot_cluster_profile_table(profile_df: pd.DataFrame, save_path):
     """
     Renders a formatted vertical table as a high-quality PNG image.
@@ -269,7 +268,7 @@ def plot_cluster_profile_table(profile_df: pd.DataFrame, save_path):
         plt.savefig(save_path, bbox_inches='tight')
         plt.close()
         
-        logger.info(f"Table image saved successfully as: {filename}")
+        logger.info(f"Table image saved successfully as: {save_path}")
 
     except Exception as e:
         logger.error(f"Failed to plot styled table: {e}")
