@@ -1,3 +1,4 @@
+'''
 import pandas as pd
 from src.logger import setup_logger
 
@@ -75,6 +76,95 @@ def run_scenario(df_base, remove_bmi, remove_glucose, scenario_title):
                     return 0
 
             # Apply the calculation to every row
+            results_df['Outliers_Removed'] = results_df.apply(calculate_specific_drop, axis=1)
+            
+            # Generate Table
+            plot_results_table(results_df, title=scenario_title)
+    
+        else:
+            logger.warning(f"No significant results found for {scenario_title}")
+    else:
+        logger.error(f"Critical: Failed to create risk groups for {scenario_title}")
+'''        
+        
+import pandas as pd
+from src.logger import setup_logger
+
+# --- Imports ---
+from src.outliers import remove_outliers_iqr
+from src.transformers import convert_continuous_to_categorical, create_composite_variable
+from src.relative_risk_analysis import run_full_analysis_pipeline
+from src.visualizations import plot_results_table
+
+# Initialize Logger
+logger = setup_logger("glucose_outliers_scenario")
+
+def run_scenario(df_base, remove_glucose, scenario_title):
+    """
+    Orchestrator function:
+    - handles Glucose outlier removal
+    - Reports outlier counts strictly for the Risk Group 
+    """
+    logger.info(f"--- Processing Scenario: {scenario_title} ---")
+    
+    # 1. Capture original indices
+    original_indices = df_base.index
+    
+    # 2. Create the Cleaned DataFrame
+    df_clean = df_base.copy()
+
+    if remove_glucose:
+        df_clean = remove_outliers_iqr(df_clean, 'avg_glucose_level', threshold=1.5)
+        
+    # 3. Identify dropped indices
+    remaining_indices = df_clean.index
+    dropped_indices = original_indices.difference(remaining_indices)
+    
+    # 4. Analyze who was dropped
+    # We need to know the original group of the dropped rows
+    df_dropped_rows = df_base.loc[dropped_indices].copy()
+    
+    if not df_dropped_rows.empty:
+        df_dropped_rows = convert_continuous_to_categorical(df_dropped_rows)
+        df_dropped_rows = create_composite_variable(df_dropped_rows)
+        # Dictionary count
+        outlier_counts = df_dropped_rows['risk_group'].value_counts().to_dict()
+    else:
+        outlier_counts = {}
+
+    # 5. Process CLEAN data for analysis
+    df_clean = convert_continuous_to_categorical(df_clean)
+    df_clean = create_composite_variable(df_clean)
+    
+    # 6. Analysis & Visualization
+    if 'risk_group' in df_clean.columns:
+        results_df = run_full_analysis_pipeline(df_clean)
+        
+        if not results_df.empty:
+            
+            # --- Strict Reporting Logic ---
+            def calculate_specific_drop(row):
+                try:
+                    parts = row['comparison'].split(' vs ')
+                    group_a = parts[0] # The Risk Group (e.g., 'glucose_only')
+                    
+                    # RULE 1: BMI is never cleaned in this version.
+                    # Therefore, the 'bmi_only' row must ALWAYS show 0 outliers removed.
+                    if group_a == 'bmi_only':
+                        return 0
+                        
+                    # RULE 2: If we are looking at 'glucose_only', but we chose NOT to remove glucose
+                    # then show 0.
+                    if group_a == 'glucose_only' and not remove_glucose:
+                       return 0
+                    
+                    # RULE 3: Return outliers ONLY from the specific Risk Group.
+                    # This strictly ignores drops from the 'neither' (healthy) group.
+                    return outlier_counts.get(group_a, 0)
+                    
+                except:
+                    return 0
+
             results_df['Outliers_Removed'] = results_df.apply(calculate_specific_drop, axis=1)
             
             # Generate Table

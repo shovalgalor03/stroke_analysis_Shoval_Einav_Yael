@@ -66,7 +66,7 @@ def main():
     # --- Step 3: Generate Outlier Scenario (Table) ---
     # Run Scenario Reports
     logger.info("--- Phase 2: Generating Scenario Report ---")
-    run_scenario(df, remove_bmi=False, remove_glucose=True, scenario_title="Without Glucose Outliers")
+    run_scenario(df, remove_glucose=True, scenario_title="Without Glucose Outliers")
    
     # --- Step 4: Feature Engineering
     logger.info("--- Phase 3: Feature Engineering ---")
