@@ -16412,3 +16412,141 @@ Group B  55.82             197.34  31.84          0.22           0.14    0.11   
 2026-01-19 18:32:48,409 - INFO - Table image saved successfully as: clustering_outputs\profile_no_glucose.png
 2026-01-19 18:32:48,409 - INFO - SUCCESS: Clustering section complete with 7 clusters.
 2026-01-19 18:32:48,410 - INFO - >>> Pipeline Finished Successfully. <<<
+2026-01-20 21:47:11,740 - INFO - START: Attempting to remove columns: ['id', 'name']
+2026-01-20 21:47:11,760 - INFO - Successfully dropped columns: ['id', 'name']
+2026-01-20 21:47:11,770 - INFO - START: Attempting to remove columns: ['ghost_col', 'gender']
+2026-01-20 21:47:11,772 - WARNING - Note: The following columns were not found and could not be dropped: ['ghost_col']
+2026-01-20 21:47:11,773 - INFO - Successfully dropped columns: ['gender']
+2026-01-20 21:47:11,777 - INFO - START: Attempting to remove columns: []
+2026-01-20 21:47:11,777 - WARNING - No columns provided to remove (empty list).
+2026-01-20 21:47:11,788 - INFO - START: Attempting to remove columns: age
+2026-01-20 21:47:11,790 - ERROR - Usage Error: Input 'columns_to_remove' must be a list, got <class 'str'>.
+2026-01-20 21:47:11,794 - INFO - START: Attempting to remove columns: ['key']
+2026-01-20 21:47:11,795 - ERROR - Usage Error: Input 'df' must be a pandas DataFrame.
+2026-01-20 21:47:11,800 - INFO - START: Attempting to remove columns: ['Age']
+2026-01-20 21:47:11,801 - WARNING - Note: The following columns were not found and could not be dropped: ['Age']
+2026-01-20 21:47:11,801 - INFO - Column 'Age' not found. Maybe you mean 'age'
+2026-01-20 21:50:18,875 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:50:18,890 - WARNING - Dropped 1 rows due to NaN values in 'group' or 'outcome'.
+2026-01-20 21:50:18,896 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:50:18,901 - ERROR - Data Prep Error - Column not found: "Columns 'A' or 'C' not found in DataFrame."
+2026-01-20 21:50:18,912 - ERROR - Data Prep Error - Data quality issue: Contingency table is too small (needs at least 2x2 categories).
+2026-01-20 21:50:18,916 - ERROR - Data Prep Error - Column not found: "Columns 'col1' or 'col2' not found in DataFrame."
+2026-01-20 21:50:18,919 - ERROR - Data Prep Error - Invalid input type: Input 'df' must be a pandas DataFrame.
+2026-01-20 21:54:47,106 - INFO - --- Starting Chi-Square Test: group vs outcome ---
+2026-01-20 21:54:47,142 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:54:47,144 - INFO - Test Finished. P-value: 0.00000 | Result: Significant (Reject H0)
+2026-01-20 21:54:47,424 - INFO - --- Starting Chi-Square Test: group vs outcome ---
+2026-01-20 21:54:47,433 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:54:47,436 - INFO - Test Finished. P-value: 1.00000 | Result: Not Significant (Fail to Reject H0)
+2026-01-20 21:54:47,453 - INFO - --- Starting Chi-Square Test: A vs Z ---
+2026-01-20 21:54:47,454 - ERROR - Data Prep Error - Column not found: "Columns 'A' or 'Z' not found in DataFrame."
+2026-01-20 21:54:47,454 - ERROR - Aborting test due to data preparation failure.
+2026-01-20 21:54:47,458 - INFO - --- Starting Chi-Square Test: group vs outcome ---
+2026-01-20 21:54:47,468 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:54:47,471 - WARNING - Assumption Warning: Some expected frequencies are < 5. Results may be less accurate.
+2026-01-20 21:54:47,472 - ERROR - Execution Error - Type Mismatch: ufunc 'less' did not contain a loop with signature matching types (<class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.StrDType'>) -> None
+2026-01-20 21:54:47,475 - INFO - --- Starting Chi-Square Test: group vs outcome ---
+2026-01-20 21:54:47,490 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:54:47,493 - WARNING - Assumption Warning: Some expected frequencies are < 5. Results may be less accurate.
+2026-01-20 21:54:47,494 - INFO - Test Finished. P-value: 1.00000 | Result: Not Significant (Fail to Reject H0)
+2026-01-20 21:58:37,292 - INFO - --- Starting Chi-Square Test: group vs outcome ---
+2026-01-20 21:58:37,337 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:58:37,342 - INFO - Test Finished. P-value: 0.00000 | Result: Significant (Reject H0)
+2026-01-20 21:58:37,346 - INFO - --- Starting Chi-Square Test: group vs outcome ---
+2026-01-20 21:58:37,363 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:58:37,364 - INFO - Test Finished. P-value: 1.00000 | Result: Not Significant (Fail to Reject H0)
+2026-01-20 21:58:37,370 - INFO - --- Starting Chi-Square Test: A vs Z ---
+2026-01-20 21:58:37,371 - ERROR - Data Prep Error - Column not found: "Columns 'A' or 'Z' not found in DataFrame."
+2026-01-20 21:58:37,372 - ERROR - Aborting test due to data preparation failure.
+2026-01-20 21:58:37,380 - INFO - --- Starting Chi-Square Test: group vs outcome ---
+2026-01-20 21:58:37,399 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:58:37,402 - WARNING - Assumption Warning: Some expected frequencies are < 5. Results may be less accurate.
+2026-01-20 21:58:37,403 - ERROR - Execution Error - Type Mismatch: ufunc 'less' did not contain a loop with signature matching types (<class 'numpy.dtypes.Float64DType'>, <class 'numpy.dtypes.StrDType'>) -> None
+2026-01-20 21:58:37,412 - INFO - --- Starting Chi-Square Test: group vs outcome ---
+2026-01-20 21:58:37,440 - INFO - Contingency table created successfully. Shape: (2, 2)
+2026-01-20 21:58:37,444 - WARNING - Assumption Warning: Some expected frequencies are < 5. Results may be less accurate.
+2026-01-20 21:58:37,446 - INFO - Test Finished. P-value: 1.00000 | Result: Not Significant (Fail to Reject H0)
+2026-01-20 22:03:18,783 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:03:18,803 - INFO - IQR Bounds calculated for 'value': [3.88, 6.88]
+2026-01-20 22:03:18,803 - INFO - Stats: Removing 1 outliers (16.67% of data).
+2026-01-20 22:03:18,803 - WARNING - High outlier count! Removing >10% of data from 'value'. Check threshold.
+2026-01-20 22:03:18,803 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:03:18,816 - INFO - IQR Bounds calculated for 'value': [8.50, 12.50]
+2026-01-20 22:03:18,816 - INFO - Stats: Removing 0 outliers (0.00% of data).
+2026-01-20 22:03:18,819 - INFO - Starting outlier removal for 'ghost' (Threshold: 1.5)
+2026-01-20 22:03:18,819 - ERROR - Validation Error - Column Missing: "Column 'ghost' not found."
+2026-01-20 22:03:18,819 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:03:18,828 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:03:18,828 - ERROR - Validation Error - Data Logic: Column 'value' is not numeric. Cannot calculate IQR.
+2026-01-20 22:03:18,829 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:03:18,832 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:03:18,832 - INFO - IQR Bounds calculated for 'value': [-110.38, 186.62]
+2026-01-20 22:03:18,835 - INFO - Stats: Removing 1 outliers (16.67% of data).
+2026-01-20 22:03:18,836 - WARNING - High outlier count! Removing >10% of data from 'value'. Check threshold.
+2026-01-20 22:07:22,618 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:07:22,642 - INFO - IQR Bounds calculated for 'value': [3.88, 6.88]
+2026-01-20 22:07:22,648 - INFO - Stats: Removing 1 outliers (16.67% of data).
+2026-01-20 22:07:22,648 - WARNING - High outlier count! Removing >10% of data from 'value'. Check threshold.
+2026-01-20 22:07:22,650 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:07:22,654 - INFO - IQR Bounds calculated for 'value': [8.50, 12.50]
+2026-01-20 22:07:22,654 - INFO - Stats: Removing 0 outliers (0.00% of data).
+2026-01-20 22:07:22,661 - INFO - Starting outlier removal for 'ghost' (Threshold: 1.5)
+2026-01-20 22:07:22,662 - ERROR - Validation Error - Column Missing: "Column 'ghost' not found."
+2026-01-20 22:07:22,662 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:07:22,667 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:07:22,667 - ERROR - Validation Error - Data Logic: Column 'value' is not numeric. Cannot calculate IQR.
+2026-01-20 22:07:22,668 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:07:22,670 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:07:22,670 - INFO - IQR Bounds calculated for 'value': [-560.38, 936.62]
+2026-01-20 22:07:22,670 - INFO - Stats: Removing 0 outliers (0.00% of data).
+2026-01-20 22:08:00,315 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:08:00,324 - INFO - IQR Bounds calculated for 'value': [3.88, 6.88]
+2026-01-20 22:08:00,324 - INFO - Stats: Removing 1 outliers (16.67% of data).
+2026-01-20 22:08:00,324 - WARNING - High outlier count! Removing >10% of data from 'value'. Check threshold.
+2026-01-20 22:08:00,329 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:08:00,332 - INFO - IQR Bounds calculated for 'value': [8.50, 12.50]
+2026-01-20 22:08:00,333 - INFO - Stats: Removing 0 outliers (0.00% of data).
+2026-01-20 22:08:00,342 - INFO - Starting outlier removal for 'ghost' (Threshold: 1.5)
+2026-01-20 22:08:00,342 - ERROR - Validation Error - Column Missing: "Column 'ghost' not found."
+2026-01-20 22:08:00,343 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:08:00,347 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:08:00,347 - ERROR - Validation Error - Data Logic: Column 'value' is not numeric. Cannot calculate IQR.
+2026-01-20 22:08:00,350 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:08:00,353 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:08:00,355 - INFO - IQR Bounds calculated for 'value': [-560.38, 936.62]
+2026-01-20 22:08:00,356 - INFO - Stats: Removing 1 outliers (16.67% of data).
+2026-01-20 22:08:00,356 - WARNING - High outlier count! Removing >10% of data from 'value'. Check threshold.
+2026-01-20 22:08:19,657 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:08:19,657 - INFO - IQR Bounds calculated for 'value': [3.88, 6.88]
+2026-01-20 22:08:19,657 - INFO - Stats: Removing 1 outliers (16.67% of data).
+2026-01-20 22:08:19,657 - WARNING - High outlier count! Removing >10% of data from 'value'. Check threshold.
+2026-01-20 22:08:19,665 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:08:19,666 - INFO - IQR Bounds calculated for 'value': [8.50, 12.50]
+2026-01-20 22:08:19,667 - INFO - Stats: Removing 0 outliers (0.00% of data).
+2026-01-20 22:08:19,672 - INFO - Starting outlier removal for 'ghost' (Threshold: 1.5)
+2026-01-20 22:08:19,672 - ERROR - Validation Error - Column Missing: "Column 'ghost' not found."
+2026-01-20 22:08:19,672 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:08:19,679 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:08:19,679 - ERROR - Validation Error - Data Logic: Column 'value' is not numeric. Cannot calculate IQR.
+2026-01-20 22:08:19,679 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:08:19,682 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:08:19,682 - INFO - IQR Bounds calculated for 'value': [-5622.88, 9374.12]
+2026-01-20 22:08:19,682 - INFO - Stats: Removing 0 outliers (0.00% of data).
+2026-01-20 22:09:52,255 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:09:52,258 - INFO - IQR Bounds calculated for 'value': [3.88, 6.88]
+2026-01-20 22:09:52,258 - INFO - Stats: Removing 1 outliers (16.67% of data).
+2026-01-20 22:09:52,258 - WARNING - High outlier count! Removing >10% of data from 'value'. Check threshold.
+2026-01-20 22:09:52,262 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:09:52,264 - INFO - IQR Bounds calculated for 'value': [8.50, 12.50]
+2026-01-20 22:09:52,264 - INFO - Stats: Removing 0 outliers (0.00% of data).
+2026-01-20 22:09:52,268 - INFO - Starting outlier removal for 'ghost' (Threshold: 1.5)
+2026-01-20 22:09:52,268 - ERROR - Validation Error - Column Missing: "Column 'ghost' not found."
+2026-01-20 22:09:52,268 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:09:52,277 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:09:52,277 - ERROR - Validation Error - Data Logic: Column 'value' is not numeric. Cannot calculate IQR.
+2026-01-20 22:09:52,277 - ERROR - Aborting outlier removal due to validation failure.
+2026-01-20 22:09:52,279 - INFO - Starting outlier removal for 'value' (Threshold: 1.5)
+2026-01-20 22:09:52,279 - INFO - IQR Bounds calculated for 'value': [1.00, 1.00]
+2026-01-20 22:09:52,282 - INFO - Stats: Removing 20 outliers (16.67% of data).
+2026-01-20 22:09:52,282 - WARNING - High outlier count! Removing >10% of data from 'value'. Check threshold.
