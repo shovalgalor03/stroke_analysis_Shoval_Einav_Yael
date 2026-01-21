@@ -168,4 +168,13 @@ def run_full_analysis_pipeline(df):
     else:
         logger.warning("No valid results were generated.")
 
+    #Save as standard CSV 
+    results_df.to_csv("final_results.csv", index=False)
+
+    #Save as a formatted text table
+    with open("final_results_table.txt", "w") as f:
+        f.write(results_df.to_string(index=False))
+
+    logger.info("Saved results to 'final_results.csv' and 'final_results_table.txt'")
+
     return results_df
