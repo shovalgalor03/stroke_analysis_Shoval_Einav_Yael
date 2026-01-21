@@ -29,8 +29,7 @@ def create_contingency_table(df: pd.DataFrame, var1: str, var2: str) -> pd.DataF
             raise ValueError("DataFrame is empty.")
 
         # 2. Handle Missing Values (Data Cleaning)
-        # Create a copy to avoid modifying the original dataframe
-        df_clean = df[[var1, var2]].dropna()
+        df_clean = df[[var1, var2]].dropna() # Create a copy to avoid modifying the original dataframe
         
         dropped_rows = len(df) - len(df_clean)
         if dropped_rows > 0:
@@ -95,13 +94,11 @@ def run_chi_square_test(df: pd.DataFrame, independent_var: str, dependent_var: s
         chi2, p_val, dof, expected_freq = chi2_contingency(contingency_table)
 
         # Step 3: Interpretation & Assumption Checks
-        
         # Check assumption: Expected frequencies should be > 5
         if (expected_freq < 5).any():
             logger.warning("Assumption Warning: Some expected frequencies are < 5. Results may be less accurate.")
 
-        # Determine significance
-        # This explicitly checks if alpha is valid during comparison
+        # Determine significance, checks if alpha is valid during comparison
         is_significant = p_val < alpha
         result_text = "Significant (Reject H0)" if is_significant else "Not Significant (Fail to Reject H0)"
 

@@ -1,0 +1,4 @@
+comparison,RR,CI_Lower,CI_Upper,P_Value,Significant_0.05,Exposed_Cases,Control_Cases
+both_high vs neither,3.0255,2.1981,4.1642,2.93417125168157e-12,True,50,108
+bmi_only vs neither,0.8332,0.5965,1.1638,0.2831803077777745,False,48,108
+glucose_only vs neither,2.8336,2.0224,3.9703,6.049884696735319e-10,True,43,108
