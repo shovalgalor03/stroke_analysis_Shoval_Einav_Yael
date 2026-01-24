@@ -66,7 +66,7 @@ def remove_outliers_iqr(df: pd.DataFrame, col_name: str, threshold: float = 1.5)
         lower_bound, upper_bound = bounds
 
         # Step 2: Apply Filter
-        # We re-verify column existence implicitly here by accessing it
+        # Implicitly re-verify column existence by accessing it
         mask_valid = (df[col_name] >= lower_bound) & (df[col_name] <= upper_bound)
         outliers_count = len(df) - mask_valid.sum()
         
@@ -81,16 +81,13 @@ def remove_outliers_iqr(df: pd.DataFrame, col_name: str, threshold: float = 1.5)
 
     # --- Specific Error Handling for Execution Phase ---
     except KeyError as e:
-        # Could happen if column is dropped during execution (unlikely but possible)
         logger.error(f"Execution Error - Column lost: {e}")
         return df
 
     except TypeError as e:
-        # Could happen if types mismatch during comparison
         logger.error(f"Execution Error - Type mismatch during filtering: {e}")
         return df
 
     except Exception as e:
-        # Catch-all for any other critical failures
         logger.exception(f"Critical error applying outlier filter: {e}")
         return df

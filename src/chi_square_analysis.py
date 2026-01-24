@@ -115,16 +115,13 @@ def run_chi_square_test(df: pd.DataFrame, independent_var: str, dependent_var: s
 
     # --- Specific Error Handling for Execution Phase ---
     except TypeError as e:
-        # Catches errors like comparing p_val (float) with alpha (string)
         logger.error(f"Execution Error - Type Mismatch: {e}")
         return None
 
     except ValueError as e:
-        # Catches mathematical errors from scipy (e.g., if table contains invalid values)
         logger.error(f"Execution Error - Value Error: {e}")
         return None 
 
     except Exception as e:
-        # Catches any other unexpected errors
         logger.exception(f"Critical error during statistical calculation: {e}")
         return None

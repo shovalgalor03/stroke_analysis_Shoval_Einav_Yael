@@ -32,15 +32,15 @@ def run_scenario(df_base, remove_glucose, scenario_title):
     remaining_indices = df_clean.index
     dropped_indices = original_indices.difference(remaining_indices)
     
-    # 4. Analyze the DROPPED rows to see which group they would have been in
-    # We take the dropped rows from the original base
+    # 4. Analyze the dropped rows to see which group they would have been in
+    # Extract dropped rows from the original base
     df_dropped_rows = df_base.loc[dropped_indices].copy()
     
-    # We must classify them to know if they were 'both_high', 'neither', etc.
+    # Classify rows to determine if they are 'both_high', 'neither', etc.
     if not df_dropped_rows.empty:
         df_dropped_rows = convert_continuous_to_categorical(df_dropped_rows)
         df_dropped_rows = create_composite_variable(df_dropped_rows)
-        # Count outliers per group (e.g., {'both_high': 5, 'neither': 10})
+        # Count outliers per group 
         outlier_counts = df_dropped_rows['risk_group'].value_counts().to_dict()
     else:
         outlier_counts = {}
@@ -54,13 +54,11 @@ def run_scenario(df_base, remove_glucose, scenario_title):
         results_df = run_full_analysis_pipeline(df_clean)
         
         if not results_df.empty:
-            # --- NEW LOGIC: Map specific counts to each row ---
             
             def calculate_specific_drop(row):
-                # The 'comparison' column looks like "both_high vs neither"
-                # We need to split it to find the two groups involved
+                # It needs to be split to find the two groups.
                 try:
-                    # split string "groupA vs groupB"
+                    # split string "group A vs group B"
                     parts = row['comparison'].split(' vs ')
                     group_a = parts[0]
                     group_b = parts[1]
