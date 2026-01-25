@@ -8,7 +8,7 @@ from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 from src.logger import setup_logger
 
-# Setup Logger
+
 logger = setup_logger("visualization")
 
 # ==========================================
@@ -64,18 +64,17 @@ def plot_mosaic_overview(df, group_col='risk_group', target_col='stroke'):
     2. Mosaic Plot: Visualizes group sizes (width) AND stroke rates (height).
     Updated: X-axis labels now include the sample size (n).
     """
-    logger.info("Generating Mosaic Plot...")
+    logger.info("Generating Mosaic Plot.")
 
     try:
         if df is None or df.empty:
             logger.warning("DataFrame is empty. Skipping Mosaic Plot.")
             return
 
-        # --- 1. Prepare Labels with Counts (NEW) ---
         # Calculate how many people are in each group
         counts = df[group_col].value_counts()
 
-        # Helper function to add (n=...) to the label
+        # Helper function to add (n=) to the label
         def make_label(k):
             if k in counts:
                 return f"{k}\n(n={counts[k]})"
@@ -85,10 +84,10 @@ def plot_mosaic_overview(df, group_col='risk_group', target_col='stroke'):
         plot_df = df.copy()
         plot_df[group_col] = plot_df[group_col].apply(make_label)
         
-        # --- 2. Initialize Figure and Axes explicitly ---
+        # Initialize Figure and Axes explicitly
         fig, ax = plt.subplots(figsize=(12, 7)) 
         
-        # --- 3. Prepare Data (Using plot_df to match new labels) ---
+        # Prepare Data (Using plot_df to match new labels)
         cross_props = pd.crosstab(plot_df[group_col], plot_df[target_col], normalize='index') * 100
         label_map = {}
         for group in cross_props.index:
@@ -107,8 +106,7 @@ def plot_mosaic_overview(df, group_col='risk_group', target_col='stroke'):
             k = (str(key[0]), str(key[1]))
             return label_map.get(k, "") 
         
-        # --- 4. Generate Plot (Pass 'ax' explicitly) ---
-        # Note: Using plot_df here!
+        #  Generate Plot (Pass 'ax' explicitly)
         mosaic(plot_df, [group_col, target_col], properties=props, gap=0.007, 
                title='Mosaic Plot: Sample Size vs Outcome', labelizer=labelizer, ax=ax)
         
@@ -119,7 +117,7 @@ def plot_mosaic_overview(df, group_col='risk_group', target_col='stroke'):
         ax.set_xlabel('Risk Group (Width = Sample Size)', fontsize=13)
         ax.set_ylabel('Outcome (Height = Proportion)', fontsize=13)
         
-        # --- Force Formatting using a Loop ---
+        # Force Formatting using a Loop
         for label in ax.get_xticklabels():
             label.set_rotation(0) # Changed to 0 (horizontal) for better readability
             label.set_horizontalalignment('center')
@@ -143,7 +141,7 @@ def plot_residuals_heatmap(df, group_col='risk_group', target_col='stroke'):
     """
     3. Pearson Residuals Heatmap
     """
-    logger.info("Generating Residuals Heatmap...")
+    logger.info("Generating Residuals Heatmap.")
     try:
         if df is None or df.empty:
             logger.warning("DataFrame is empty. Skipping Heatmap.")
@@ -247,7 +245,7 @@ def plot_results_table(results_df, title):
     if results_df.empty:
         return
 
-    # 1. Select and Rename Columns for cleaner display
+    # Select and Rename Columns for cleaner display
     display_df = results_df[['comparison', 'RR', 'P_Value', 'Significant_0.05', 'Outliers_Removed']].copy()
     display_df.columns = ['Group', 'RR', 'P Value', 'Significant_0.05', 'Outliers Removed']
     
@@ -255,11 +253,11 @@ def plot_results_table(results_df, title):
     display_df['RR'] = display_df['RR'].round(2)
     display_df['P Value'] = display_df['P Value'].round(4)
 
-    # 2. Create Figure
+    # Create Figure
     fig, ax = plt.subplots(figsize=(12, 3)) # Short height for a table
     ax.axis('off') # Turn off the X/Y axis lines
 
-    # 3. Create the Table
+    # Create the Table
     table = ax.table(
         cellText=display_df.values,
         colLabels=display_df.columns,
@@ -268,7 +266,7 @@ def plot_results_table(results_df, title):
         bbox=[0, 0, 1, 1] # Stretch to fill frame
     )
 
-    # 4. Styling
+    # Styling
     table.auto_set_font_size(False)
     table.set_fontsize(10)
     
@@ -280,10 +278,10 @@ def plot_results_table(results_df, title):
         else:
             cell.set_facecolor('#f5f5f5') # Light Gray background for data
 
-    # 5. Add Title
+    # Add Title
     plt.title(f"Results Table: {title}", fontsize=12, fontweight='bold', pad=10)
     
-    # 6. Save and Show
+    # Save and Show
     plt.tight_layout()
     filename = f"table_{title.replace(' ', '_')}.png"
     plt.savefig(filename, dpi=200)
