@@ -239,7 +239,7 @@ def plot_rr_lollipop(results_df):
 
 def plot_results_table(results_df, title):
     """
-    Renders the results DataFrame as a static image table.
+    Displays the results DataFrame as a static image table.
     This allows the table to appear in the 'Plots' pane of IDEs.
     """
     logger.info(f"Generating Results Table for: {title}")

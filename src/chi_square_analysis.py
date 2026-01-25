@@ -67,7 +67,7 @@ def create_contingency_table(df: pd.DataFrame, var1: str, var2: str) -> pd.DataF
 # Function 2: Statistical Execution
 def run_chi_square_test(df: pd.DataFrame, independent_var: str, dependent_var: str, alpha: float = 0.05) -> dict:
     """
-    Orchestrates the Chi-Square Test of Independence.
+    Executes the Chi-Square Test of Independence.
     It calls the preparation function first, then performs the statistical test.
 
     Args:

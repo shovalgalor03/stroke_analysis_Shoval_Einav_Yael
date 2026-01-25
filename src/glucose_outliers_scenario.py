@@ -1,7 +1,6 @@
 import pandas as pd
 from src.logger import setup_logger
 
-# --- Imports needed for the workflow ---
 from src.outliers import remove_outliers_iqr
 from src.transformers import convert_continuous_to_categorical, create_composite_variable
 from src.relative_risk_analysis import run_full_analysis_pipeline
@@ -12,7 +11,7 @@ logger = setup_logger("glucose_outliers_scenario")
         
 def run_scenario(df_base, remove_glucose, scenario_title):
     """
-    Orchestrator function:
+    Executes function:
     1. Identifies outliers.
     2. Checks which 'Risk Group' those outliers belonged to (Specific Count).
     3. Runs analysis on cleaned data.
@@ -36,7 +35,7 @@ def run_scenario(df_base, remove_glucose, scenario_title):
     # Extract dropped rows from the original base
     df_dropped_rows = df_base.loc[dropped_indices].copy()
     
-    # Classify rows to determine if they are 'both_high', 'neither', etc.
+    # Classify rows to determine if they are 'both_high', 'neither'
     if not df_dropped_rows.empty:
         df_dropped_rows = convert_continuous_to_categorical(df_dropped_rows)
         df_dropped_rows = create_composite_variable(df_dropped_rows)

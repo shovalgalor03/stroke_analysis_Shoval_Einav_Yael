@@ -30,11 +30,11 @@ def load_dataset(file_path):
 
         df = pd.read_csv(file_path) # Load the dataset
 
-        # Integrity checks
+        # Integrity check
         assert not df.empty, "Dataset is empty."
+        # Check for column count - at least 10 columns
         assert df.shape[1] >= 10, "Dataset must contain at least 10 columns to meet the project requirements."
-        
-        # Added check for row count based on project checklist
+        # Check for row count - at least 1000 rows
         assert df.shape[0] >= 1000, "Dataset must contain at least 1000 rows to meet the project requirements."
 
         logger.info(f"Dataset loaded successfully. Shape: {df.shape}") # Log success with shape info

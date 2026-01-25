@@ -78,7 +78,7 @@ def convert_to_numeric(df: pd.DataFrame, col_name: str, safety_threshold: float 
         df (pd.DataFrame): The DataFrame containing the data.
         col_name (str): The name of the column to convert.
         safety_threshold (float): The maximum allowed ratio of data becoming NaN 
-                                  during conversion (0.0 to 1.0). Default is 0.5 (50%).
+                                  during conversion. Default is 0.5 (50%).
 
     Returns:
         pd.DataFrame: A new DataFrame with the converted column.

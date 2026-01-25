@@ -1,7 +1,7 @@
 import pandas as pd
 from src.logger import setup_logger
 
-logger = setup_logger("Outlier_Detection")
+logger = setup_logger("Outlier_Detection")  # Initialize the logger
 
 # Function 1: Calculation & Validation
 def calculate_iqr_bounds(df: pd.DataFrame, col_name: str, threshold: float) -> tuple:
@@ -20,18 +20,23 @@ def calculate_iqr_bounds(df: pd.DataFrame, col_name: str, threshold: float) -> t
         assert pd.api.types.is_numeric_dtype(df[col_name]), \
             f"Column '{col_name}' is not numeric. Cannot calculate IQR."
 
-        # 2. Math Logic
+        # 2. Math Logic - Outlier Detection using IQR
+        
+        # Calculate the First Quartile (25th percentile)
         Q1 = df[col_name].quantile(0.25)
+        # Calculate the Third Quartile (75th percentile)
         Q3 = df[col_name].quantile(0.75)
+        # Calculate the Interquartile Range (represents the middle 50% of the data)
         IQR = Q3 - Q1
         
+        # Define the lower and upper bounds. Any data point outside these bounds is considered an outlier. 
         lower = Q1 - (threshold * IQR)
         upper = Q3 + (threshold * IQR)
         
         logger.info(f"IQR Bounds calculated for '{col_name}': [{lower:.2f}, {upper:.2f}]")
         return lower, upper
 
-    # Specific Error Handling for Calculation Phase
+    # Specific Error Handling
     except TypeError as e:
         logger.error(f"Validation Error - Type: {e}")
         return None
@@ -79,7 +84,7 @@ def remove_outliers_iqr(df: pd.DataFrame, col_name: str, threshold: float = 1.5)
         # Create a df for valid values (within bounds)
         return df[mask_valid].copy()
 
-    # --- Specific Error Handling for Execution Phase ---
+    # --- Specific Error Handling ---
     except KeyError as e:
         logger.error(f"Execution Error - Column lost: {e}")
         return df
