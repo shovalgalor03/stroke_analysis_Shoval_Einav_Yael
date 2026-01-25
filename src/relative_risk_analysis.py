@@ -3,84 +3,82 @@ import numpy as np
 from scipy.stats import chi2_contingency
 from src.logger import setup_logger
 
-logger = setup_logger("rr_analysis")
+logger = setup_logger("rr_analysis") 
 
 def calculate_statistics(exposed_sick, exposed_healthy, control_sick, control_healthy):
     """
-    Internal helper function: Performs only the mathematical calculations.
+    # Calculates stats based on raw data.
     Accepts counts of sick/healthy patients and returns: RR, CI, and P-Value.
     """
-    # --- SAFETY CHECK 1: Sanity Assertions ---
-    # Ensure counts are non-negative (medically impossible).
+
+    # Ensure counts are non-negative.
     assert exposed_sick >= 0 and exposed_healthy >= 0, "Exposed counts cannot be negative"
     assert control_sick >= 0 and control_healthy >= 0, "Control counts cannot be negative"
 
-    # Total people in each group
+    # Total people in each big group.
     total_exposed = exposed_sick + exposed_healthy
     total_control = control_sick + control_healthy
 
-    # --- SAFETY CHECK 2: Empty Groups ---
-    # Although checked externally, this internal check prevents mathematical crashes.
+    # Check if the two big groups are empty.
     if total_exposed == 0 or total_control == 0:
         return np.nan, np.nan, np.nan, np.nan
 
-    # 1. Calculate Relative Risk (RR)
+    # Calculate Relative Risk (RR).
     risk_exposed = exposed_sick / total_exposed
     risk_control = control_sick / total_control
 
     if risk_control == 0:
-        rr = np.inf  # Infinity (division by zero is impossible)
+        rr = np.inf  # Assign an infinity sign to prevent division by zero which is impossible.
     else:
         rr = risk_exposed / risk_control
 
-    # 2. Calculate Confidence Interval (CI)
+    # Calculate Confidence Interval (CI).
     try:
-        # Add epsilon to prevent division by zero in log calculation
+        # Add epsilon to prevent division by zero in the log calculation.
         epsilon = 1e-9
         se_term_exposed = (1 / (exposed_sick + epsilon)) - (1 / (total_exposed + epsilon))
         se_term_control = (1 / (control_sick + epsilon)) - (1 / (total_control + epsilon))
         
-        # Take absolute value before sqrt to prevent NaN in edge cases
+        # Calculates the Standard Error - SE, use absolute to prevent taking the square root of a negative value.
         se = np.sqrt(abs(se_term_exposed + se_term_control))
         
-        # Calculate interval bounds
+        # Calculate the CI bounds - Upper and Lower.
         ci_lower = np.exp(np.log(rr + epsilon) - 1.96 * se)
         ci_upper = np.exp(np.log(rr + epsilon) + 1.96 * se)
     except Exception:
         ci_lower, ci_upper = np.nan, np.nan
 
-    # 3. Calculate P-value (Chi-Square Test)
-    obs = np.array([[exposed_sick, exposed_healthy], [control_sick, control_healthy]])
+    # Calculate P-value - Creates a 2X2 contingency table of the Observed values for Chi-Square statistical testing.
+    obs = np.array([[exposed_sick, exposed_healthy], [control_sick, control_healthy]]) 
     
-    # Check if table is valid for Chi-Square (sum is not zero)
+    # Check if the 2X2 table is valid for Chi-Square - ensures the sum is not zero.
     if np.sum(obs) == 0:
         p_val = 1.0
     else:
-        chi2, p_val, dof, expected = chi2_contingency(obs, correction=False)
+        chi2, p_val, dof, expected = chi2_contingency(obs, correction=False) # Takes only the P-value from the function.
 
     return rr, ci_lower, ci_upper, p_val
 
 
 def calculate_relative_risk(df, exposed_group, control_group, outcome_col='stroke', group_col='risk_group'):
     """
-    Main function: Handles data preparation, validation, and logging.
-    Delegates the math to the helper function.
+    Main function: Prepares the data and calls the calculation logic (helper function).
     """
     logger.info(f"Starting analysis: Comparing '{exposed_group}' vs '{control_group}'")
 
     try:
-        # --- SAFETY CHECK: Type Checking ---
+        # Type checking - if the input is in df shape.
         if not isinstance(df, pd.DataFrame):
             raise TypeError(f"Input 'df' must be a pandas DataFrame, got {type(df)}")
 
-        # --- 1. Input Validation ---
+        # Input Validation - if the wanted columns are in df.
         if group_col not in df.columns:
             raise ValueError(f"Column '{group_col}' not found in DataFrame.")
         if outcome_col not in df.columns:
             raise ValueError(f"Outcome column '{outcome_col}' not found.")
         
-        # Check that groups exist in the data
-        existing_groups = df[group_col].unique()
+        # Check that groups exist in the data.
+        existing_groups = df[group_col].unique() # Gets the names of the divided groups.
         if exposed_group not in existing_groups:
             logger.warning(f"Exposed group '{exposed_group}' not found. Skipping.")
             return None
@@ -88,28 +86,28 @@ def calculate_relative_risk(df, exposed_group, control_group, outcome_col='strok
             logger.warning(f"Control group '{control_group}' not found. Skipping.")
             return None
 
-        # --- 2. Filter Data ---
-        subset = df[df[group_col].isin([exposed_group, control_group])].copy() # Use copy to avoid SettingWithCopyWarning
+        # Filter Data - takes only the relevant groups for the comparison.
+        subset = df[df[group_col].isin([exposed_group, control_group])].copy() # Use copy to avoid tempering with the original df.
         
-        # Ensure outcome column is numeric (0/1) to prevent summation errors
+        # Ensure outcome column is numeric.
         if not pd.api.types.is_numeric_dtype(subset[outcome_col]):
              raise TypeError(f"Outcome column '{outcome_col}' must be numeric (0/1).")
 
-        # Count cases in Exposed Group
+        # Count cases in Exposed group according to the binarization.
         exp_df = subset[subset[group_col] == exposed_group]
-        exposed_sick = int(exp_df[outcome_col].sum()) # Cast to int for safety
-        exposed_healthy = len(exp_df) - exposed_sick
+        exposed_sick = int(exp_df[outcome_col].sum()) # Converts the variable to int for safety.
+        exposed_healthy = len(exp_df) - exposed_sick # Calculates the num of exposed control by subtracting the num of sick from the whole group.
 
-        # Count cases in Control Group
+        # Count cases in Control group according to the binarization.
         ctrl_df = subset[subset[group_col] == control_group]
-        control_sick = int(ctrl_df[outcome_col].sum()) # Cast to int for safety
-        control_healthy = len(ctrl_df) - control_sick
+        control_sick = int(ctrl_df[outcome_col].sum()) # Converts the variable to int for safety.
+        control_healthy = len(ctrl_df) - control_sick # Calculates the num of healty control by subtracting the num of sick from the whole group.
 
-        # --- 3. Send to calculation (Helper function) ---
+        # Calculations using helper function.
         rr, ci_lower, ci_upper, p_val = calculate_statistics(
             exposed_sick, exposed_healthy, control_sick, control_healthy)
 
-        # If NaN returned (e.g., due to empty groups), stop here
+        # If Nan returned - it stops the code here, because 
         if np.isnan(rr):
             logger.warning(f"Skipping {exposed_group}: Not enough data for calculation.")
             return None
